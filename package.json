@@ -1,0 +1,17 @@
+{
+  "name": "mls_listings",
+  "version": "0.1",
+  "description": "A full stack application created by Albert for Michael's business.",
+  "main": "index.js",
+  "author": "Albert Kim",
+  "license": "MIT",
+  "dependencies": {
+    "base64url": "^2.0.0",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.2",
+    "google-auth-library": "0.*",
+    "googleapis": "^25.0.0",
+    "nightmare": "^2.10.0",
+    "request": "^2.83.0"
+  }
+}
