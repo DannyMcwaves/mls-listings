@@ -1,6 +1,6 @@
 {
   "name": "mls_listings",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "A full stack application created by Albert for Michael's business.",
   "main": "index.js",
   "author": "Albert Kim",
@@ -13,5 +13,8 @@
     "googleapis": "^25.0.0",
     "nightmare": "^2.10.0",
     "request": "^2.83.0"
+  },
+  "scripts": {
+    "start": "node scrape"
   }
 }
