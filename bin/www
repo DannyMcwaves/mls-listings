@@ -1,0 +1,14 @@
+#! /usr/bin/env node
+
+// debug will get the name of the app in the package.json file when you call it.
+let debug = require('debug')('mls_listings');
+
+// then you will get the app in the main file and then use it to start the server.
+let app = require('../main');
+
+app.set('port', process.env.PORT || 8000);
+
+app.listen(app.get('port'), function () {
+	console.log("web server is active on ", app.get('port'));
+});
+
