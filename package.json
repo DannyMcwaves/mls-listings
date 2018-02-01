@@ -7,14 +7,20 @@
   "license": "MIT",
   "dependencies": {
     "base64url": "^2.0.0",
+    "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
+    "cookie-parser": "^1.4.3",
+    "debug": "^3.1.0",
     "express": "^4.16.2",
     "google-auth-library": "0.*",
     "googleapis": "^25.0.0",
+    "mongoose": "^5.0.3",
+    "morgan": "^1.9.0",
     "nightmare": "^2.10.0",
     "request": "^2.83.0"
   },
   "scripts": {
-    "start": "node scrape"
+    "start": "node bin/www",
+    "scrape": "node scrapy/index"
   }
 }
