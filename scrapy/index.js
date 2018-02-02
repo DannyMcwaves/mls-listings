@@ -6,5 +6,5 @@ let url2 = 'http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=dac85d3bfce
 let url3 = 'http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=421f88db54b34781b2035e1be9679818&App=TREB';
 
 scrapy(url);
-scrapy(url2);
-scrapy(url3);
+// scrapy(url2);
+// scrapy(url3);
