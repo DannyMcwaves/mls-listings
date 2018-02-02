@@ -9,6 +9,17 @@ let schemaDef = {
   address: String,
   price: String,
   units: Number,
+  annualMortgageExpense: String,
+  noi: String,
+  expenses : {
+    taxes: String,
+    gas: String,
+    hydro: String,
+    heat: String
+  },
+  totalExpenses: String,
+  operatingCashFlow: String,
+  pricePerUnit: String
 }
 
 let homeSchema = new Schema(schemaDef);
