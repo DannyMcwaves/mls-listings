@@ -8,7 +8,9 @@ let schemaDef = {
   mls: String,
   address: String,
   price: String,
+  squarefoot: String,
   units: Number,
+  heat: String,
   annualMortgageExpense: String,
   noi: String,
   expenses : {
