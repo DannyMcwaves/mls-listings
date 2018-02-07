@@ -21,6 +21,7 @@
   },
   "scripts": {
     "start": "node bin/www",
-    "scrape": "node scrapy/index"
+    "scrape": "node scrapy/index",
+    "pad": "node scripts/padmapper"
   }
 }
