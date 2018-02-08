@@ -21,6 +21,14 @@ let schemaDef = {
     hydro: String,
     heat: String
   },
+  income: {
+    '1 bedrooms': String,
+    '2 bedrooms': String,
+    '3 bedrooms': String,
+    '4 bedrooms': String,
+    'parking spot': String
+  },
+  totalIncome: String,
   totalExpenses: String,
   operatingCashFlow: String,
   pricePerUnit: String
