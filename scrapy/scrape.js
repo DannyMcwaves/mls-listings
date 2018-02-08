@@ -4,6 +4,7 @@
 
 let request = require('request');
 let parser = require('cheerio');
+let getRooms = require('../scripts/padmapper');
 let save = require('../db/server').Save
 
 const getWebPage = url => {
@@ -67,6 +68,7 @@ const parseWebPage = webpage => {
     item.totalExpenses = '$' + (eval(item.expenses.taxes.substr(1).replace(/,/g, '')) + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
     item.operatingCashFlow = item.noi,
     item.pricePerUnit = '$' + (eval(item.price.substr(1).replace(/,/g, '')) / item.units)
+    
     container.push(item);
   });
 
@@ -77,10 +79,26 @@ const parseWebPage = webpage => {
 const saveObjectIntoDb = objectList => {
   // console.log(objectList);
   for(let i of objectList) {
-    save(i).then(data => {
+    getRooms(i.address).then(res => {
+      let temp = {}, total;
+
+      for( let a of res) {
+        for (let b in a) {
+          temp[b] = a[b]
+          total += eval(a[b].substr(1).replace(/,/g, ''))
+        }
+      }
+      temp['parking spot'] = '$150'
+      i.income = temp
+      i.totalIncome = '$' + total + 150
+      return i;
+    }).then(data => {
       console.log(data);
-    }).catch(err => {
-      console.log(err);
+      save(data).then(data => {
+        console.log(data);
+      }).catch(err => {
+        console.log(err);
+      })
     })
   }
   return Promise.resolve('saved into db');
