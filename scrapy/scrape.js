@@ -4,7 +4,7 @@
 
 let request = require('request');
 let parser = require('cheerio');
-let getRooms = require('../scripts/padmapper');
+let cargo = require('../scripts/padmapper');
 let save = require('../db/server').Save
 
 const getWebPage = url => {
@@ -65,7 +65,7 @@ const parseWebPage = webpage => {
         heat: '$18.88'
       },
     };
-    item.totalExpenses = '$' + (eval(item.expenses.taxes.substr(1).replace(/,/g, '')) + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
+    item.totalExpenses = '$' + (eval(item.expenses.taxes.substr(1).replace(/,/g, '') || '0') + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
     item.operatingCashFlow = item.noi,
     item.pricePerUnit = '$' + (eval(item.price.substr(1).replace(/,/g, '')) / item.units)
     
@@ -76,42 +76,42 @@ const parseWebPage = webpage => {
 
 }
 
+const getIncomes = (dest, items) => {
+  cargo(dest).then(data => {
+    let temp = {}, total = 0, cont = ['1 bedrooms', '2 bedrooms', '3 bedrooms', '4 bedrooms'], c = 0;
+    for(let i of data) {
+      temp = {...temp, ...i}
+      total += eval(i[cont[c]].replace(/[$,]/g, ''))
+      c++
+    }
+    temp['parking spot'] = '$150'
+    items.income = temp
+    items.totalIncome = '$' + (total + 150)
+    return items;
+  }).then(data => {
+    save(data).then(data => {
+      console.log(data);
+    }).catch(err => {
+      console.log(err);
+    })
+  }).catch(err => {
+    console.log(err);
+  })
+}
+
 const saveObjectIntoDb = objectList => {
   // console.log(objectList);
   for(let i of objectList) {
-    getRooms(i.address).then(res => {
-      let temp = {}, total;
-
-      for( let a of res) {
-        for (let b in a) {
-          temp[b] = a[b]
-          total += eval(a[b].substr(1).replace(/,/g, ''))
-        }
-      }
-      temp['parking spot'] = '$150'
-      i.income = temp
-      i.totalIncome = '$' + total + 150
-      return i;
-    }).then(data => {
-      console.log(data);
-      save(data).then(data => {
-        console.log(data);
-      }).catch(err => {
-        console.log(err);
-      })
-    })
+    [first, ...rest] = i.address.split(' ');
+    getIncomes(rest.join(' '), i);
   }
-  return Promise.resolve('saved into db');
 }
 
 module.exports = url => {
   getWebPage(url).then(data => {
     return parseWebPage(data)
   }).then(parsedObject => {
-    //console.log(parsedObject)
-    return saveObjectIntoDb(parsedObject)
-  }).then(done => {
-    console.log(done);
+    saveObjectIntoDb(parsedObject)
   }).catch(err => {
     console.log(err);
   })
