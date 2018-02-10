@@ -1,83 +1,100 @@
 var Nightmare = require('nightmare');
 const async = require('async');
-const parser = require('cheerio');
 
-let getUrl = (url, beds) => {
-  temp = url.split('=')
-  let first = temp[0], second = '=-79.47377073922002,43.668797179752616,-79.44278586067998,43.6925710446461';
-  let uri = first.split('?').join(`/${beds}-beds?`) + second
-  console.log(uri);
-  return uri;
+const getIncomes = addr => {
+
+  var results = [];
+
+  var cargo = async.cargo(function(tasks, cb) {
+    async.each(tasks, function(url, cb) {
+      var nightmare = Nightmare();
+      nightmare.goto(url.link)
+        .type('.animate-shake', `${url.location} Toronto, ON, Canada \u000d`)
+        .wait(3000)
+        .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(2)')
+        .wait(4000)
+        .evaluate(() => {
+          let selectors = '#root > div > div > div > div > div.col-second > div > div > div > div.row.p-no-gutter > div.row.p-no-gutter.list-scroll > div > div:nth-child(1) > div.image-container > div.price > span.text';
+          return document.querySelector(selectors).textContent
+        })
+        .then((home) => {
+          results.push({'1 bedrooms' : home});
+          nightmare
+            .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(2)')
+            .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(3)')
+            .wait(4000)
+            .evaluate(() => {
+              let selectors = '#root > div > div > div > div > div.col-second > div > div > div > div.row.p-no-gutter > div.row.p-no-gutter.list-scroll > div > div:nth-child(1) > div.image-container > div.price > span.text';
+              return document.querySelector(selectors).textContent
+            })
+            .then((home) => {
+              results.push({'2 bedrooms': home});
+              nightmare
+                .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(3)')
+                .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(4)')
+                .wait(4000)
+                .evaluate(() => {
+                  let selectors = '#root > div > div > div > div > div.col-second > div > div > div > div.row.p-no-gutter > div.row.p-no-gutter.list-scroll > div > div:nth-child(1) > div.image-container > div.price > span.text';
+                  return document.querySelector(selectors).textContent
+                })
+                .then(home => {
+                  results.push({'3 bedrooms': home});
+                  nightmare
+                    .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(4)')
+                    .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(5)')
+                    .wait(4000)
+                    .evaluate(() => {
+                      let selectors = '#root > div > div > div > div > div.col-second > div > div > div > div.row.p-no-gutter > div.row.p-no-gutter.list-scroll > div > div:nth-child(1) > div.image-container > div.price > span.text';
+                      return document.querySelector(selectors).textContent
+                    })
+                    .then(home => {
+                      results.push({'4 bedrooms': home});
+                      return nightmare.end();
+                    })
+                    .then(_ => {
+                      cb();
+                    })
+                    .catch(err => {
+                      let last = results[2]['3 bedrooms']
+                      results.push({'4 bedrooms': '$'+(eval(last.substr(1).replace(/[$,]/g, '')) + 2530)})
+                      cb();
+                      return nightmare.end();
+                    })
+                })
+                .catch(err => {
+                  let last = results[1]['2 bedrooms'].substr(1).replace(/[$,]/g, '')
+                  results.push({'3 bedrooms': '$'+(eval(last) + 1160)})
+                  results.push({'4 bedrooms': '$'+(eval(last) + 2530)})
+                  cb();
+                  return nightmare.end()
+                })
+            })
+            .catch(err => {
+              let last = results[0]['1 bedrooms']
+              results.push({'2 bedrooms': '$'+(eval(last.substr(1).replace(/[$,]/g, '')) + 1160)})
+              results.push({'3 bedrooms': '$'+(eval(last.substr(1).replace(/[$,]/g, '')) + 2530)})
+              results.push({'4 bedrooms' : '$'+(eval(last.substr(1).replace(/[$,]/g, '')) + 3711)})
+              cb();
+              return nightmare.end();
+            })
+        })
+        .catch(err => {
+          console.log(err);
+          return nightmare.end();
+        })
+    }, function(err) {
+      cb(err);
+    })
+  }, 4);
+
+  cargo.push({link: 'https://www.padmapper.com/', location: addr}, err => {if (err) console.log(err);})
   
-}
-
-const getBedRooms = location => {
-  let nightmare = new Nightmare();
-  nightmare
-    .goto('https://www.padmapper.com/')
-    .type('.animate-shake', `${location} toronto \u000d`)
-    .wait(3000)
-    .evaluate(() => {
-      let url = document.location.href;
-      return url
-    })
-    .end()
-    .then(url => {
-      push(getUrl(url, 1), 1);
-      push(getUrl(url, 2), 2);
-      push(getUrl(url, 3), 3);
-      push(getUrl(url, 4), 4);
-    })  
-    .catch(err => {
-      console.log(err);
-    })
-
-  return new Promise((res, rej) => {
+  return new Promise(res => {
     cargo.drain = _ => {
       res(results);
     }
-  }) 
-
-}
-
-var results = [];
-let selectors = '#root > div > div > div > div > div.col-second > div > div > div > div.row.p-no-gutter > div.row.p-no-gutter.list-scroll > div > div:nth-child(1) > div.image-container > div.price > span.text';
-var cargo = async.cargo(function(tasks, cb) {
-  async.each(tasks, function(url, cb) {
-    var nightmare = Nightmare(), result;
-    nightmare.goto(url.link)
-      .wait(4000)
-      .evaluate(sel => {
-        return document.querySelector(sel).textContent
-        // return 'dunno'
-      }, selectors)
-      .then(function(title) {
-        results.push({[url.id + ' bedrooms'] : title});
-        return nightmare.end();
-      })
-      .then(function() {
-        cb();
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  }, function(err) {
-    cb(err);
   })
-}, 3);
 
-/*
-cargo.drain = function () {
-  console.dir(results);
-};
-*/
-
-let push = (url, id) => {
-  cargo.push({
-    link: url, id},
-    err => {if (err) console.log(err);} 
-  )
 }
 
-
-module.exports = getBedRooms
+module.exports = getIncomes;
