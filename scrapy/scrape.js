@@ -81,7 +81,7 @@ const getIncomes = (dest, items) => {
     let temp = {}, total = 0, cont = ['1 bedrooms', '2 bedrooms', '3 bedrooms', '4 bedrooms'], c = 0;
     for(let i of data) {
       temp = {...temp, ...i}
-      total += eval(i[cont[c]].replace(/[$,]/g, ''))
+      total += eval(i[cont[c]].averagePrice)
       c++
     }
     temp['parking spot'] = '$150'
