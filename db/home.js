@@ -22,10 +22,22 @@ let schemaDef = {
     heat: String
   },
   income: {
-    '1 bedrooms': String,
-    '2 bedrooms': String,
-    '3 bedrooms': String,
-    '4 bedrooms': String,
+    '1 bedrooms': {
+      averagePrice: String,
+      numberOfUnits: Number
+    },
+    '2 bedrooms': {
+      averagePrice: String,
+      numberOfUnits: Number
+    },
+    '3 bedrooms': {
+      averagePrice: String,
+      numberOfUnits: Number
+    },
+    '4 bedrooms': {
+      averagePrice: String,
+      numberOfUnits: Number
+    },
     'parking spot': String
   },
   totalIncome: String,
