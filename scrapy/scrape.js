@@ -6,6 +6,7 @@ let request = require('request');
 let parser = require('cheerio');
 let cargo = require('../scripts/padmapper');
 let save = require('../db/server').Save
+let async = require('async');
 
 const getWebPage = url => {
   return new Promise((resolve, reject) => {
@@ -76,8 +77,9 @@ const parseWebPage = webpage => {
 
 }
 
-const getIncomes = (dest, items) => {
-  cargo(dest).then(data => {
+const getIncomes = (items, cb) => {
+  [first, ...rest] = items.address.split(' ');
+  cargo(rest.join(' ')).then(data => {
     let temp = {}, total = 0, cont = ['1 bedrooms', '2 bedrooms', '3 bedrooms', '4 bedrooms'], c = 0;
     for(let i of data) {
       temp = {...temp, ...i}
@@ -100,11 +102,7 @@ const getIncomes = (dest, items) => {
 }
 
 const saveObjectIntoDb = objectList => {
-  // console.log(objectList);
-  for(let i of objectList) {
-    [first, ...rest] = i.address.split(' ');
-    getIncomes(rest.join(' '), i);
-  }
+  async.each(objectList, getIncomes);
 }
 
 module.exports = url => {
