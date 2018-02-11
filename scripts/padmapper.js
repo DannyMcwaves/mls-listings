@@ -9,7 +9,7 @@ const getIncomes = addr => {
     async.each(tasks, function(url, cb) {
       var nightmare = new Nightmare({show:true});
       nightmare.goto(url.link)
-        .type('.animate-shake', `${url.location}, Toronto \u000d`)
+        .type('.animate-shake', `${url.location}, Toronto, ON, Canada \u000d`)
         .wait(3000)
         .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(2)')
         .wait(2000)
@@ -27,7 +27,7 @@ const getIncomes = addr => {
           nightmare
             .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(2)')
             .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(3)')
-            .wait(4000)
+            .wait(2000)
             .evaluate((home) => {
               let nodelist = document.querySelectorAll('.list-item-container > div'), total = 0, l = nodelist.length;
               for(let node of nodelist){
@@ -42,7 +42,7 @@ const getIncomes = addr => {
               nightmare
                 .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(3)')
                 .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(4)')
-                .wait(4000)
+                .wait(2000)
                 .evaluate((home) => {
                   let nodelist = document.querySelectorAll('.list-item-container > div'), total = 0, l = nodelist.length;
                   for(let node of nodelist){
@@ -57,7 +57,7 @@ const getIncomes = addr => {
                   nightmare
                     .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(4)')
                     .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(5)')
-                    .wait(4000)
+                    .wait(2000)
                     .evaluate((home) => {
                       let nodelist = document.querySelectorAll('.list-item-container > div'), total = 0, l = nodelist.length;
                       for(let node of nodelist){
