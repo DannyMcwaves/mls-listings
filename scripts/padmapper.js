@@ -20,7 +20,7 @@ const getIncomes = addr => {
             cur = text ? text.match(/\$\d+,\d+/)[0].replace(/[$,]/g, '') : '0'
             total += eval(cur)
           }
-          return {averagePrice: total/(l||1), numberOfUnits: l || 1}
+          return {averagePrice: total/(l||1), numberOfUnits: l}
         })
         .then((home) => {
           results.push({'1 bedrooms' : home});
@@ -35,7 +35,7 @@ const getIncomes = addr => {
                 cur = text ? text.match(/\$\d+,\d+/)[0].replace(/[$,]/g, '') : '0'
                 total += eval(cur)
               }
-              return {averagePrice: total/(l||1) || home + 1193.00, numberOfUnits: l || 1}
+              return {averagePrice: total/(l||1), numberOfUnits: l}
             }, home.averagePrice)
             .then((home) => {
               results.push({'2 bedrooms': home});
@@ -50,7 +50,7 @@ const getIncomes = addr => {
                     cur = text ? text.match(/\$\d+,\d+/)[0].replace(/[$,]/g, '') : '0'
                     total += eval(cur)
                   }
-                  return {averagePrice: total/(l||1) || home + 1521.50, numberOfUnits: l || 1}
+                  return {averagePrice: total/(l||1), numberOfUnits: l}
                 }, home.averagePrice)
                 .then(home => {
                   results.push({'3 bedrooms': home});
@@ -65,7 +65,7 @@ const getIncomes = addr => {
                         cur = text ? text.match(/\$\d+,\d+/)[0].replace(/[$,]/g, '') : '0'
                         total += eval(cur)
                       }
-                      return {averagePrice: total/(l||1) || home + 1882.24, numberOfUnits: l || 1}
+                      return {averagePrice: total/(l||1), numberOfUnits: l}
                     }, home.averagePrice)
                     .then(home => {
                       results.push({'4 bedrooms': home});
