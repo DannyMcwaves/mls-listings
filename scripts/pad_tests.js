@@ -1,13 +1,13 @@
 
 let push = require('./padmapper');
 
-push('Lappin Ave').then(data => {
-    console.log(data)
-}).catch(err => {
-    console.log(err);
-})
+// push('Lappin Ave').then(data => {
+//     console.log(data)
+// }).catch(err => {
+//     console.log(err);
+// })
 
-push('Dovercourt Rd').then(data => {
+push('Prescott Ave').then(data => {
     console.log(data)
 }).catch(err => {
     console.log(err);
