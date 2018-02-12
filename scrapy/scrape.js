@@ -80,7 +80,7 @@ const parseWebPage = webpage => {
 const getIncomes = (items, cb) => {
   // [first, ...rest] = items.address.split(' ');
   cargo(items.address).then(data => {
-    let temp = {}, total = 0, cont = ['1 bedrooms', '2 bedrooms', '3 bedrooms', '4 bedrooms'], c = 0;
+    let temp = {}, total = 0, cont = ['one_br', 'two_br', 'three_br', 'four_br'], c = 0;
     for(let i of data) {
       temp = {...temp, ...i}
       total += eval(i[cont[c]].averagePrice)
