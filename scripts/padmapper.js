@@ -11,7 +11,6 @@ const getIncomes = addr => {
       nightmare.goto(url.link)
         .type('.animate-shake', `${url.location}, Toronto, ON, Canada \u000d`)
         .wait(5000)
-        .click('.gm-style-pbc')
         .click('.gmnoprint > div > div > button:nth-child(3)')
         .wait(1000)
         .click('.gmnoprint > div > div > button:nth-child(3)')
@@ -106,7 +105,7 @@ const getIncomes = addr => {
   }, 4);
 
   cargo.push({link: 'https://www.padmapper.com/', location: addr}, err => {if (err) console.log(err);})
-  
+
   return new Promise(res => {
     cargo.drain = _ => {
       res(results);
