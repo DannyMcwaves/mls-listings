@@ -22,23 +22,23 @@ let schemaDef = {
     heat: String
   },
   income: {
-    one_br: {
+    '1 bedrooms': {
       averagePrice: String,
       numberOfUnits: Number
     },
-    two_br: {
+    '2 bedrooms': {
       averagePrice: String,
       numberOfUnits: Number
     },
-    three_br: {
+    '3 bedrooms': {
       averagePrice: String,
       numberOfUnits: Number
     },
-    four_br: {
+    '4 bedrooms': {
       averagePrice: String,
       numberOfUnits: Number
     },
-    parking_spot: String
+    'parking spot': String
   },
   totalIncome: String,
   totalExpenses: String,
