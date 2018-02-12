@@ -11,6 +11,13 @@ const getIncomes = addr => {
       nightmare.goto(url.link)
         .type('.animate-shake', `${url.location}, Toronto, ON, Canada \u000d`)
         .wait(3000)
+        .click('.gm-style-pbc')
+        .click('.gmnoprint > div > div > button:nth-child(3)')
+        .wait(1000)
+        .click('.gmnoprint > div > div > button:nth-child(3)')
+        .wait(1000)
+        .click('.gmnoprint > div > div > button:nth-child(3)')
+        .wait(1000)
         .click('div#root > div.app.ferdy:nth-child(1) > div.p-home-body-scroll:nth-child(1) > div.colmask.right-menu:nth-child(2) > div.col-left:nth-child(1) > div.col-second:nth-child(2) > div.p-rails:nth-child(1) > div.rails:nth-child(1) > div.p-list:nth-child(1) > div.p-filter:nth-child(2) > div.row.filter:nth-child(1) > div.filter-content-container:nth-child(1) > div.filter-row:nth-child(3) > div.col-right:nth-child(1) > div.col-filter-wrap:nth-child(1) > div.col-filter:nth-child(1) > div.row.row-bedrooms.p-no-gutter:nth-child(1) > div.btn.btn-toggle.toggle-sm:nth-child(2)')
         .wait(2000)
         .evaluate(() => {
