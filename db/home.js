@@ -7,7 +7,7 @@ let Schema = _mongoose.Schema;
 let schemaDef = {
   mls: String,
   address: String,
-  price: String,
+  price: Number,
   squarefoot: String,
   units: Number,
   heat: String,
@@ -17,33 +17,33 @@ let schemaDef = {
   gas: String,
   expenses : {
     taxes: String,
-    gas: String,
-    hydro: String,
-    heat: String
+    gas: Number,
+    hydro: Number,
+    heat: Number
   },
   income: {
     'one_br': {
-      averagePrice: String,
+      averagePrice: Number,
       numberOfUnits: Number
     },
     'two_br': {
-      averagePrice: String,
+      averagePrice: Number,
       numberOfUnits: Number
     },
     'three_br': {
-      averagePrice: String,
+      averagePrice: Number,
       numberOfUnits: Number
     },
     'four_br': {
-      averagePrice: String,
+      averagePrice: Number,
       numberOfUnits: Number
     },
-    'parking spot': String
+    'parking spot': Number
   },
-  totalIncome: String,
-  totalExpenses: String,
-  operatingCashFlow: String,
-  pricePerUnit: String
+  totalIncome: Number,
+  totalExpenses: Number,
+  operatingCashFlow: Number,
+  pricePerUnit: Number
 }
 
 let homeSchema = new Schema(schemaDef);
