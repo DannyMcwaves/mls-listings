@@ -38,37 +38,39 @@ const parseWebPage = webpage => {
 
     let price = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim()
 
-    let units = eval($(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim()) || eval($(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim())
+    let units = eval($(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim()) || eval($(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim());
 
-    let squarefoot = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim()
+    let squarefoot = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim();
 
-    let heat = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text().trim()
+    let heat = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text().trim();
 
-    let gas = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text()
+    let gas = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text();
 
-    let hydro = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text()
+    let hydro = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text();
+
+    let taxes = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text();
 
     let item = {
       mls: $(elem).attr('id'),
       address,
       squarefoot,
-      price,
+      price: eval(price.replace(/[$,]/g, '')),
       heat,
       units,
       hydro,
       gas,
       annualMortgageExpense: 'https://www.ratehub.ca/best-mortgage-rates',
-      noi: 34691.9,
+      noi: 34691.90,
       expenses: {
-        taxes: $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text(),
+        taxes: eval(taxes.replace(/[$,]/g, '')),
         gas: 100.00,
         hydro: 115.00,
         heat: 18.88
       },
     };
-    item.totalExpenses = (eval(item.expenses.taxes.substr(1).replace(/,/g, '') || '0') + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
+    item.totalExpenses = (item.expenses.taxes || 0) + item.expenses.gas + item.expenses.hydro + item.expenses.heat,
     item.operatingCashFlow = item.noi,
-    item.pricePerUnit = (eval(item.price.substr(1).replace(/,/g, '')) / item.units)
+    item.pricePerUnit = item.price / item.units
 
     container.push(item);
   });
