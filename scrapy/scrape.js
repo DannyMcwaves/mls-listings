@@ -58,17 +58,17 @@ const parseWebPage = webpage => {
       hydro,
       gas,
       annualMortgageExpense: 'https://www.ratehub.ca/best-mortgage-rates',
-      noi: '$34,691.91',
+      noi: 34691.9,
       expenses: {
-        taxes: $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span:nth-child(1) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span:nth-child(1) > span').text(),
-        gas: '$100.00',
-        hydro: '$115.00',
-        heat: '$18.88'
+        taxes: $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text(),
+        gas: 100.00,
+        hydro: 115.00,
+        heat: 18.88
       },
     };
-    item.totalExpenses = '$' + (eval(item.expenses.taxes.substr(1).replace(/,/g, '') || '0') + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
+    item.totalExpenses = (eval(item.expenses.taxes.substr(1).replace(/,/g, '') || '0') + eval(item.expenses.gas.substr(1).replace(/,/g, '')) + eval(item.expenses.hydro.substr(1).replace(/,/g, ''))),
     item.operatingCashFlow = item.noi,
-    item.pricePerUnit = '$' + (eval(item.price.substr(1).replace(/,/g, '')) / item.units)
+    item.pricePerUnit = (eval(item.price.substr(1).replace(/,/g, '')) / item.units)
 
     container.push(item);
   });
@@ -78,7 +78,6 @@ const parseWebPage = webpage => {
 }
 
 const getIncomes = (items, cb) => {
-  // [first, ...rest] = items.address.split(' ');
   cargo(items.address).then(data => {
     let temp = {}, total = 0, cont = ['one_br', 'two_br', 'three_br', 'four_br'], c = 0;
     for(let i of data) {
@@ -86,9 +85,9 @@ const getIncomes = (items, cb) => {
       total += eval(i[cont[c]].averagePrice)
       c++
     }
-    temp['parking spot'] = '$150'
+    temp['parking spot'] = 150
     items.income = temp
-    items.totalIncome = '$' + (total + 150)
+    items.totalIncome = (total + 150)
     return items;
   }).then(data => {
     save(data).then(data => {
