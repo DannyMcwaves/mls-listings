@@ -12,7 +12,7 @@ let schemaDef = {
   units: Number,
   heat: String,
   annualMortgageExpense: String,
-  noi: String,
+  noi: Number,
   hydro: String,
   gas: String,
   expenses : {
