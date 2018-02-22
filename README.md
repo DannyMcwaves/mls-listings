@@ -48,10 +48,3 @@ There's a few edge cases I'll email Michael about.
 ## Expenses
 
 Coming
-
-## Also
-
-https://imgur.com/a/NJiSv
-
-Can you also scrape this section of the houses from now on. Chances are we'll need this info for the future.
-If you can turn that into a part of the data object that would be great.
