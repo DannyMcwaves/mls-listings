@@ -9,7 +9,16 @@ let schemaDef = {
   address: String,
   price: Number,
   squarefoot: String,
-  units: Number,
+  house: {
+    units: {
+      number: Number,
+      unit_1: Number || null,
+      unit_2: Number || null,
+      unit_3: Number || null,
+      unit_4: Number || null
+    },
+  },
+  bedroom: Array,
   heat: String,
   annualMortgageExpense: String,
   noi: Number,
