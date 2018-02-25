@@ -18,7 +18,8 @@
     "mongoose": "^5.0.3",
     "morgan": "^1.9.0",
     "nightmare": "^2.10.0",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "threads": "^0.10.1"
   },
   "scripts": {
     "start": "node bin/www",
