@@ -5,8 +5,11 @@
 let request = require('request');
 let parser = require('cheerio');
 let cargo = require('../scripts/padmapper');
-let save = require('../db/server').Save
+let save = require('../db/server').Save;
 let async = require('async');
+let Pool = require('threads').Pool;
+let page = require('./page');
+let pool = new Pool(5);
 
 const getWebPage = url => {
   return new Promise((resolve, reject) => {
@@ -20,8 +23,7 @@ const getWebPage = url => {
   })
 }
 
-
-const parseWebPage = webpage => {
+function* parse($, elem) {
   /**
    * fields to scrape include;
    * address - 'formitem.vertical', the very first one.
@@ -29,89 +31,107 @@ const parseWebPage = webpage => {
    * mls number
    * number of units,
    */
-  let $ = parser.load(webpage);
-  let container = []
 
-  $('div.link-item').each((i, elem) => {
+  let address = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(1)').text().trim() 
 
-    let address = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(1)').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(1)').text().trim()
+  let price = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim()
 
-    let price = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim()
+  let units = eval($(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim())
 
-    let units = eval($(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim()) || eval($(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(1) > span').text().trim());
+  let squarefoot = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim()
 
-    let squarefoot = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > span:nth-child(9) > span').text().trim();
+  let heat = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text()
 
-    let heat = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(5) > span > span').text().trim();
+  let bedroom = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(5) > div.formitem.formgroup.vertical > span:nth-child(2) > span').text().split('+')
 
-    let gas = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text();
+  let gas = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(4) > span').text()
 
-    let hydro = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text();
+  let hydro = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(3) > div > div:nth-child(3) > span:nth-child(3) > span').text()
 
-    let taxes = $(elem).find('div.report-container > div.report-container.status-new > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text() || $(elem).find('div.report-container > div.report-container.status-sc > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span').text();
+  let taxes = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > span:nth-child(1) > span.value').text()
+  let house = {
+    units:{
+      number: units,
+      unit_1: parseInt(bedroom[0]) || null,
+      unit_2: parseInt(bedroom[1]) || null,
+      unit_3: parseInt(bedroom[2]) || null,
+      unit_4: parseInt(bedroom[3]) || null
+    }
+  }
 
-    let item = {
-      mls: $(elem).attr('id'),
-      address,
-      squarefoot,
-      price: eval(price.replace(/[$,]/g, '')),
-      heat,
-      units,
-      hydro,
-      gas,
-      annualMortgageExpense: 'https://www.ratehub.ca/best-mortgage-rates',
-      noi: 34691.90,
-      expenses: {
-        taxes: eval(taxes.replace(/[$,]/g, '')),
-        gas: 100.00,
-        hydro: 115.00,
-        heat: 18.88
-      },
-    };
-    item.totalExpenses = (item.expenses.taxes || 0) + item.expenses.gas + item.expenses.hydro + item.expenses.heat,
-    item.operatingCashFlow = item.noi,
-    item.pricePerUnit = item.price / item.units
+  let item = {
+    mls: $(elem).attr('id'),
+    address,
+    squarefoot,
+    price: eval(price.replace(/[$,]/g, '')),
+    heat,
+    house,
+    hydro,
+    gas,
+    bedroom,
+    annualMortgageExpense: 'https://www.ratehub.ca/best-mortgage-rates',
+    noi: 34691.90,
+    expenses: {
+      taxes: eval(taxes.replace(/[$,]/g, '')) || 0,
+      gas: 100.00,
+      hydro: 115.00,
+      heat: 18.88
+    },
+  };
 
-    container.push(item);
-  });
-
-  return Promise.resolve(container);
+  item.totalExpenses = (item.expenses.taxes || 0) + item.expenses.gas + item.expenses.hydro + item.expenses.heat,
+  
+  item.operatingCashFlow = item.noi,
+  
+  item.pricePerUnit = item.price / units
+    
+  yield item
 
 }
 
-const getIncomes = (items, cb) => {
-  cargo(items.address).then(data => {
-    let temp = {}, total = 0, cont = ['one_br', 'two_br', 'three_br', 'four_br'], c = 0;
-    for(let i of data) {
-      temp = {...temp, ...i}
-      total += eval(i[cont[c]].averagePrice)
-      c++
-    }
-    temp['parking spot'] = 150
-    items.income = temp
-    items.totalIncome = (total + 150)
-    return items;
-  }).then(data => {
-    save(data).then(data => {
-      console.log(data);
-    }).catch(err => {
-      console.log(err);
-    })
+function* parseWebPage(webpage) {
+  
+  let $ = parser.load(webpage);
+
+  links = $('div.link-item').toArray();
+  
+  for(let i of links) {
+    yield* parse($, $(i));
+  }
+
+}
+
+const getIncomes = (items) => {
+  cargo(items).then(data => {
+    console.log(data);
   }).catch(err => {
     console.log(err);
   })
 }
 
+pool
+  .on('done', function(job, message) {
+    saveObjectIntoDb(message);
+  })
+  .on('error', function(job, error) {
+    console.error('Job errored:', error);
+  })
+  .on('finished', function() {
+    console.log('Everything done, shutting down the thread pool.');
+    pool.killAll();
+  });
+
 const saveObjectIntoDb = objectList => {
-  async.each(objectList, getIncomes);
+  save(objectList).then(data => {console.log(data)}).catch(err => {console.log(err)});
 }
 
 module.exports = url => {
+  
   getWebPage(url).then(data => {
-    return parseWebPage(data)
-  }).then(parsedObject => {
-    saveObjectIntoDb(parsedObject)
-  }).catch(err => {
-    console.log(err);
-  })
+    for (let i of parseWebPage(data)) {
+      pool
+      .run(__dirname + '/../scripts/padmapper.js')
+      .send(i)
+    }
+  });
 }
