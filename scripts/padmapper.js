@@ -1,7 +1,7 @@
 var Nightmare = require('nightmare');
 const async = require('async');
 
-const getIncomes = addr => {
+const getIncomes = item => {
 
   var results = [];
 
@@ -102,13 +102,22 @@ const getIncomes = addr => {
     }, function(err) {
       cb(err);
     })
-  }, 4);
+  }, 10);
 
-  cargo.push({link: 'https://www.padmapper.com/', location: addr}, err => {if (err) console.log(err);})
+  cargo.push({link: 'https://www.padmapper.com/', location: item.address}, err => {if (err) console.log(err);})
 
   return new Promise(res => {
     cargo.drain = _ => {
-      res(results);
+      let temp = {}, total = 0, cont = ['one_br', 'two_br', 'three_br', 'four_br'], c = 0;
+      for(let i of results) {
+        temp = {...temp, ...i}
+        total += item.bedroom.map(x => parseInt(x)).indexOf(c+1) > -1 ? eval(i[cont[c]].averagePrice) : 0
+        c++
+      }
+      temp['parking spot'] = 150
+      item.income = temp
+      item.totalIncome = (total + 150)
+      res(item);
     }
   })
 
