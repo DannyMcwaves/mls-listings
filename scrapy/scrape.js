@@ -32,7 +32,7 @@ function* parse($, elem) {
    * number of units,
    */
 
-  let address = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(1)').text().trim() 
+  let address = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(1)').text().trim()
 
   let price = $(elem).find('div.report-container > div.report-container > div.formitem.form.viewform > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div > span:nth-child(1) > span').text().trim()
 
@@ -80,21 +80,21 @@ function* parse($, elem) {
   };
 
   item.totalExpenses = (item.expenses.taxes || 0) + item.expenses.gas + item.expenses.hydro + item.expenses.heat,
-  
+
   item.operatingCashFlow = item.noi,
-  
+
   item.pricePerUnit = item.price / units
-    
+
   yield item
 
 }
 
 function* parseWebPage(webpage) {
-  
+
   let $ = parser.load(webpage);
 
   links = $('div.link-item').toArray();
-  
+
   for(let i of links) {
     yield* parse($, $(i));
   }
@@ -126,11 +126,11 @@ const saveObjectIntoDb = objectList => {
 }
 
 module.exports = url => {
-  
+
   getWebPage(url).then(data => {
     for (let i of parseWebPage(data)) {
       pool
-      .run(__dirname + '/../scripts/padmapper.js')
+      .run(__dirname + '/../scripts/pad3.js')
       .send(i)
     }
   });
