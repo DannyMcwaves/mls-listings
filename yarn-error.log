@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js skrape
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js pad
 
 PATH: 
   C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Program Files\Dell\DW WLAN Card;;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Java\jdk1.7.0_79\bin\;C:\Program Files (x86)\Calibre2\;C:\Python34\Scripts\;C:\Python34\;C:\Program Files (x86)\Heroku\bin;C:\Program Files (x86)\git\cmd;node_modules\npm\bin\;C:\Program Files\MongoDB\Server\3.2\bin\;C:\Users\Albert\AppData\Local\Android\sdk\platform-tools;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Program Files (x86)\PuTTY\;C:\ProgramData\chocolatey\bin;C:\tools\python2;C:\Users\Albert\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Albert\AppData\Local\Programs\Git\cmd;C:\Program Files\nodejs\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files (x86)\Yarn\bin\;C:\Users\Albert\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\Albert\AppData\Local\Programs\Python\Python36\;C:\Ruby25-x64\bin;C:\Ruby23\bin;C:\Ruby23-x64\bin;C:\RailsInstaller\Git\cmd;C:\RailsInstaller\Ruby2.1.0\bin;C:\Ruby22-x64\bin;C:\Program Files (x86)\Microsoft VS Code\bin;C:\Users\Albert\AppData\Local\Programs\Git\cmd;C:\Program Files\PostgreSQL\9.5\bin;C:\Program Files\PostgreSQL\9.5\lib;C:\Users\Albert\AppData\Local\Microsoft\WindowsApps;C:\MongoDB\bin;C:\Program Files\ipfs\go-ipfs;C:\Users\Albert\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Albert\AppData\Local\atom\bin;C:\Users\Albert\AppData\Local\Microsoft\WindowsApps;C:\Users\Albert\AppData\Roaming\npm;"C:\Users\Albert\AppData\Roaming\Python\Scripts;";"C:\Users\Albert\AppData\Local\Programs\Python\Python36\Scripts;";"C:\Users\Albert\AppData\Roaming\Python\Python36\Scripts;";C:\Users\Albert\AppData\Local\Yarn\bin
@@ -42,7 +42,7 @@ npm manifest:
     "scripts": {
       "start": "node bin/www",
       "scrape": "node scrapy/index",
-      "pad": "node scripts/padmapper",
+      "pad": "node scrapy/pad",
       "skrape": "node scrapy/skrape"
     }
   }
@@ -1700,7 +1700,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c node scrapy/skrape
+  Arguments: /d /s /c node scrapy/pad
   Directory: C:\Users\Albert\Documents\clientwork\mlslistings
   Output:
   

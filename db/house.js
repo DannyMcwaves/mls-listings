@@ -18,6 +18,12 @@ let houseSchema = new Schema({
 			message: [String]
 		},
 		units: [Number]
+	},
+	income: {
+		onebr: { totalUnits: Number, avgPrice: Number },
+		twobr: { totalUnits: Number, avgPrice: Number },
+		threebr: { totalUnits: Number, avgPrice: Number },
+		fourbr: { totalUnits: Number, avgPrice: Number}
 	}
 })
 

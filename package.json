@@ -26,7 +26,7 @@
   "scripts": {
     "start": "node bin/www",
     "scrape": "node scrapy/index",
-    "pad": "node scripts/padmapper",
+    "pad": "node scrapy/pad",
     "skrape": "node scrapy/skrape"
   }
 }
