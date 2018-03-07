@@ -4,10 +4,28 @@ const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 const base64url = require('base64url');
 
+const request = require('request');
+const rp = require('request-promise-native');
+const cheerio = require('cheerio');
+const Mlslink = require('../db/mlslink')
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://localhost:27017/mls_listings')
+
 const SCOPES = ['https://mail.google.com/'];
 const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 const TOKEN_PATH = TOKEN_DIR + 'gmail-nodejs-quickstart.json';
+
+/**
+ * HOW THIS FILE WORKS
+ * fs.readFile() -> where the program starts
+ * 1. authorize() first, then add what you wanna do as a callback param
+ * 2. readMessages() -> where you search for emails
+ * 3. inside readMessages() -> finds torontomls links from emails
+ *    checks if they're not expired, and inserts them into db
+ * 4. Run this script to populate db with torontomls links
+ */
 
 fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   if (err) {
@@ -79,19 +97,21 @@ function storeToken(token) {
 }
 
 /**
- * Lists the labels in the user's account.
+ * The function that does stuff
  *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 
 function readMessages(auth) {
+  	// - get the links that are needed
+	// - organize that data 
+	// - insert into db
   var gmail = google.gmail('v1');
   gmail.users.messages.list({
     auth,
     userId: 'me'
   },{
     qs: {
-      q: 'subject:listings from:michaellombardi29@gmail.com',
+      q: 'subject:property match from:michaellombardi29@gmail.com',
     }
   }, function(err, response) {
     if (err) {
@@ -104,6 +124,8 @@ function readMessages(auth) {
     } else {
       // Got list of messages from query
       // Now get them and get that info
+
+      let urls = []
       messages.forEach((m, i) => {
         gmail.users.messages.get({
           auth,
@@ -111,7 +133,7 @@ function readMessages(auth) {
           id: m.id
         }, {
           format: 'full'
-        }, function(err, response) {
+        }, async function(err, response) {
           if (err) {
             throw err;
           }
@@ -125,45 +147,34 @@ function readMessages(auth) {
 
           // v - array of links containing http
           const matches = msg.match(/\bhttp?:\/\/\S+/gi);
+          const match = matches[0].slice(0, -1)
+          
+          let url 
+          if (~match.indexOf('torontomls.net')) { 
+            url = match
+          } else {
+            url = null
+          }
 
-          // check if it contains torontomls
-
-          matches.forEach(m => {
-            if (~m.indexOf('torontomls.net')) {
-              const formattedUrl = m.substring(0, m.length - 1);
-              console.log(formattedUrl);
+          if (url) {
+            const websiteCheck = await rp(url)
+            if (websiteCheck.length > 150) {
+              // this means link is not expired
+              // insert into Mlslink db
+              let mlslink = new Mlslink()
+              mlslink.link = url
+              mlslink.save(err => {
+                if (err) {
+                  console.error(err)
+                } else {
+                  console.log(`${mlslink.link} saved`)
+                }
+              })
             }
-          })
-
-
+          }
         })
       })
-
-
-
     }
   })
 }
 
-function listLabels(auth) {
-  var gmail = google.gmail('v1');
-  gmail.users.labels.list({
-    auth: auth,
-    userId: 'me',
-  }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    var labels = response.labels;
-    if (labels.length == 0) {
-      console.log('No labels found.');
-    } else {
-      console.log('Labels:');
-      for (var i = 0; i < labels.length; i++) {
-        var label = labels[i];
-        console.log('- %s', label.name);
-      }
-    }
-  });
-}

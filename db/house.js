@@ -3,7 +3,11 @@ mongoose.Promise = global.Promise
 let Schema = mongoose.Schema
 
 let houseSchema = new Schema({
-	address: String,
+	address: {
+		type: String,
+		unique: true,
+		index: true
+	},
 	mls: String,
 	price: String,
 	sqft: String,

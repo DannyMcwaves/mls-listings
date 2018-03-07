@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js pad
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js mega
 
 PATH: 
   C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Program Files\Dell\DW WLAN Card;;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Java\jdk1.7.0_79\bin\;C:\Program Files (x86)\Calibre2\;C:\Python34\Scripts\;C:\Python34\;C:\Program Files (x86)\Heroku\bin;C:\Program Files (x86)\git\cmd;node_modules\npm\bin\;C:\Program Files\MongoDB\Server\3.2\bin\;C:\Users\Albert\AppData\Local\Android\sdk\platform-tools;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Program Files (x86)\PuTTY\;C:\ProgramData\chocolatey\bin;C:\tools\python2;C:\Users\Albert\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Albert\AppData\Local\Programs\Git\cmd;C:\Program Files\nodejs\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files (x86)\Yarn\bin\;C:\Users\Albert\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\Albert\AppData\Local\Programs\Python\Python36\;C:\Ruby25-x64\bin;C:\Ruby23\bin;C:\Ruby23-x64\bin;C:\RailsInstaller\Git\cmd;C:\RailsInstaller\Ruby2.1.0\bin;C:\Ruby22-x64\bin;C:\Program Files (x86)\Microsoft VS Code\bin;C:\Users\Albert\AppData\Local\Programs\Git\cmd;C:\Program Files\PostgreSQL\9.5\bin;C:\Program Files\PostgreSQL\9.5\lib;C:\Users\Albert\AppData\Local\Microsoft\WindowsApps;C:\MongoDB\bin;C:\Program Files\ipfs\go-ipfs;C:\Users\Albert\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Albert\AppData\Local\atom\bin;C:\Users\Albert\AppData\Local\Microsoft\WindowsApps;C:\Users\Albert\AppData\Roaming\npm;"C:\Users\Albert\AppData\Roaming\Python\Scripts;";"C:\Users\Albert\AppData\Local\Programs\Python\Python36\Scripts;";"C:\Users\Albert\AppData\Roaming\Python\Python36\Scripts;";C:\Users\Albert\AppData\Local\Yarn\bin
@@ -37,13 +37,16 @@ npm manifest:
       "morgan": "^1.9.0",
       "nightmare": "^2.10.0",
       "request": "^2.83.0",
+      "request-promise-native": "^1.0.5",
       "threads": "^0.10.1"
     },
     "scripts": {
       "start": "node bin/www",
       "scrape": "node scrapy/index",
       "pad": "node scrapy/pad",
-      "skrape": "node scrapy/skrape"
+      "skrape": "node scrapy/skrape",
+      "email": "node scripts/index",
+      "mega": "node scripts/mega"
     }
   }
 
@@ -941,6 +944,10 @@ Lockfile:
     version "3.0.1"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.0.1.tgz#14d49028a38bc740241d11e2ecd57ec06d73c19a"
   
+  lodash@^4.13.1:
+    version "4.17.5"
+    resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
+  
   lodash@^4.14.0, lodash@^4.15.0:
     version "4.17.4"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
@@ -1369,6 +1376,20 @@ Lockfile:
     dependencies:
       is-finite "^1.0.0"
   
+  request-promise-core@1.1.1:
+    version "1.1.1"
+    resolved "https://registry.yarnpkg.com/request-promise-core/-/request-promise-core-1.1.1.tgz#3eee00b2c5aa83239cfb04c5700da36f81cd08b6"
+    dependencies:
+      lodash "^4.13.1"
+  
+  request-promise-native@^1.0.5:
+    version "1.0.5"
+    resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.5.tgz#5281770f68e0c9719e5163fd3fab482215f4fda5"
+    dependencies:
+      request-promise-core "1.1.1"
+      stealthy-require "^1.1.0"
+      tough-cookie ">=2.3.3"
+  
   request@^2.45.0, request@^2.72.0, request@^2.81.0, request@^2.83.0:
     version "2.83.0"
     resolved "https://registry.yarnpkg.com/request/-/request-2.83.0.tgz#ca0b65da02ed62935887808e6f510381034e3356"
@@ -1526,6 +1547,10 @@ Lockfile:
     version "1.3.1"
     resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
   
+  stealthy-require@^1.1.0:
+    version "1.1.1"
+    resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
+  
   string-template@1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/string-template/-/string-template-1.0.0.tgz#9e9f2233dc00f218718ec379a28a5673ecca8b96"
@@ -1605,6 +1630,12 @@ Lockfile:
     dependencies:
       readable-stream "~1.1.9"
       xtend "~2.1.1"
+  
+  tough-cookie@>=2.3.3:
+    version "2.3.4"
+    resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.4.tgz#ec60cee38ac675063ffc97a5c18970578ee83655"
+    dependencies:
+      punycode "^1.4.1"
   
   tough-cookie@~2.3.3:
     version "2.3.3"
@@ -1700,7 +1731,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c node scrapy/pad
+  Arguments: /d /s /c node scripts/mega
   Directory: C:\Users\Albert\Documents\clientwork\mlslistings
   Output:
   

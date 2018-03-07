@@ -21,12 +21,15 @@
     "morgan": "^1.9.0",
     "nightmare": "^2.10.0",
     "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
     "threads": "^0.10.1"
   },
   "scripts": {
     "start": "node bin/www",
     "scrape": "node scrapy/index",
     "pad": "node scrapy/pad",
-    "skrape": "node scrapy/skrape"
+    "skrape": "node scrapy/skrape",
+    "email": "node scripts/index",
+    "mega": "node scripts/mega"
   }
 }

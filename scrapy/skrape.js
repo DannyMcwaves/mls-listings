@@ -10,14 +10,9 @@ let nightmare = Nightmare({
 });
 
 
-var run = function*() {
+var run = function*(url) {
   var result = yield nightmare
-    // load url
-  //  .goto('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=8bbeb30b613142b7a5b46e5987cd102b&App=TREB')
- //   .goto('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=d84f5136cd3a49648466a35c5b7a58c8&App=TREB')
- //   .goto('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=ca523ceb24534ee4bc6cea9636bd2802&App=TREB')
- //   .goto('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=2207d142e86f483a8a4a231bf1d2f12d&App=TREB')
-      .goto('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=72936b6ccfeb4acfb478db7ddadc834b&App=TREB')
+    .goto(url)
     .evaluate(function() {
 
       /* 
@@ -491,16 +486,16 @@ var run = function*() {
           data
         }
       })
-    });
+    }, url);
 
   yield nightmare.end();
 
   return result;
 }
 
-co(run)
+const getLinkAndScrape = (link) => {
+  co.wrap(run)(link)
   .then(function(result) {
-
     result.forEach(r => {
       const { data } = r
 
@@ -515,19 +510,21 @@ co(run)
       house.hydro = data.hydro || null
       house.taxes = data.taxes || null
       house.unitAndBr = data.unitAndBr || null
+
       house.save(err => {
-        if (err) throw err
-        console.log(`${house.address} saved`)
+        if (err) {
+          console.error(err)
+        } else {
+          console.log(`${house.address} saved`)
+        }
       })
     })
 
-
-    //console.log(result)
-    // result.forEach(r => {
-    //   console.log(r.data.unitAndBr)
-    // })
-    //console.log(result[2].data.kitchens)
   }, function(err) {
     console.log(err);
   });
+}
 
+module.exports = url => {
+  getLinkAndScrape(url)
+}
