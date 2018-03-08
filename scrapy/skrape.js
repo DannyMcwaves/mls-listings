@@ -9,6 +9,8 @@ let nightmare = Nightmare({
   show: false
 });
 
+const { padScrape } = require('./pad')
+
 
 var run = function*(url) {
   var result = yield nightmare
@@ -515,7 +517,14 @@ const getLinkAndScrape = (link) => {
         if (err) {
           console.error(err)
         } else {
-          console.log(`${house.address} saved`)
+          // house saved successfully
+          // now called padmapper scraper
+          if (house.unitAndBr) {
+            console.log(`${house.address} saved. Now scraping padmapper`)
+            padScrape(house.address, house.unitAndBr)
+          } else {
+            console.log(`${house.address} saved, no units and br to scrape`)
+          }
         }
       })
     })
@@ -525,6 +534,4 @@ const getLinkAndScrape = (link) => {
   });
 }
 
-module.exports = url => {
-  getLinkAndScrape(url)
-}
+module.exports = getLinkAndScrape

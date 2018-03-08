@@ -30,6 +30,7 @@
     "pad": "node scrapy/pad",
     "skrape": "node scrapy/skrape",
     "email": "node scripts/index",
-    "mega": "node scripts/mega"
+    "mega": "node scripts/mega",
+    "fix": "node scripts/mlsScrape"
   }
 }

@@ -8,45 +8,10 @@ nightmare = Nightmare({
 
 mongoose.connect('mongodb://localhost:27017/mls_listings')
 
-const getPutAvgIncome = async () => {
+const getPutAvgIncome = (address, unit) => {
 
-	// how can i automate this script...and that script...
-
-	const houses = await House.find({}).exec()
-	
-	let addressArray = []
-	let unitArray = []
-
-	houses.forEach(h => {
-		if (!h.unitAndBr.err.error) {
-			const addrUnit = {
-				address: h.address,
-				unit: h.unitAndBr
-			}
-			addressArray.push(h.address)
-			unitArray.push(h.unitAndBr)
-		}
-	})
-
-//	console.log(addressArray[0])
-//console.log(unitArray[0])
-	co.wrap(run)(addressArray[0], unitArray[0])
+	co.wrap(run)(address, unit)
   .then(function(result) {
-
-		// result = 
-		// [ null,
-		// 	null,
-		// 	{ br: 1, price: 1395 },
-		// 	{ br: 2, price: 1350 },
-		// 	null,
-		// 	{ br: 1, price: 1700 },
-		// 	null,
-		// 	{ br: 1, price: 1000 },
-		// 	{ br: 2, price: 1750 } ]
-
-		// now i have the prices and bedrooms i care about
-		// now i must get the average of each br
-		// and insert into db
 
 		let onebr = 0;
 		let onecount = 0;
@@ -95,32 +60,23 @@ const getPutAvgIncome = async () => {
 		income.fourbr.avgPrice = fourbr / fourcount || 0
 		income.fourbr.totalUnits = fourcount || 0
 
-		House.findOneAndUpdate({address: addressArray[0]}, 
-			{ $set: { income }}, { new: true }, (err, doc) => {
-				if (err) throw err
-
-				console.log(doc)
+		House.findOneAndUpdate(
+			{address}, 
+			{ $set: { income }}, 
+			{ new: true }, 
+			(err, doc) => {
+				if (err) console.log(err)
+				else {
+					console.log(doc)
+					mongoose.disconnect()
+				}
 			})
-
-
-    
-  }, function(err) {
-    console.log(err);
-  });
+		}, function(err) {
+			if (err) console.log(err)
+		});
 
 }
 
-getPutAvgIncome()
-
-// await House.find({}, (err, docs) => {
-// 	if (err) throw err
-
-// 	docs.forEach(d => {
-// 		addressArray.push(d.address)
-// 	})
-// })
-
-// console.log(addressArray)
 var run = function*(address, unit) {
 
 	const longTermBtn = '#root > div > div > div > div > div.col-second > div > div > div > div.p-filter > div > div > div:nth-child(2) > div > div.col-filter-wrap > div > div > div:nth-child(1)'
@@ -132,9 +88,8 @@ var run = function*(address, unit) {
 
   var result = yield nightmare
     .goto('https://www.padmapper.com/')
-
+		.click('.animate-shake')
     .type('.animate-shake', `${address}, Toronto, ON, Canada \u000d`)
-
     .wait(4000)
 		.click(zoomOut)
 		.wait(500)
@@ -156,12 +111,6 @@ var run = function*(address, unit) {
     .evaluate(function(unit) {
 			var elements = Array.from(document.getElementsByClassName('row p-no-gutter list-item-full'));
 
-			// do unit understanding here
-			// send info as param to map function
-			// which elements in array do we care about?
-			// it's about br from unit
-			// [1, 2]
-
 			return elements.map(function(element) {
 
 				const textsplit = element.innerText.split('·')
@@ -169,8 +118,6 @@ var run = function*(address, unit) {
 				// pricebr = [ '$2,800', '3 Bedrooms ' ]
 				const price = parseInt(priceBr[0].replace(/\D+/g, ""))
 				const br = parseInt(priceBr[1])
-
-
 
 				let x = []
 
@@ -189,17 +136,8 @@ var run = function*(address, unit) {
 							}
 						}
 					}
-
 				}
-
 			  return
-
-				// x.push({
-				// 	price, br
-				// })
-				
-
-				// return x
 			})
     }, unit);
 
@@ -207,3 +145,5 @@ var run = function*(address, unit) {
 
   return result;
 };
+
+exports.padScrape = getPutAvgIncome

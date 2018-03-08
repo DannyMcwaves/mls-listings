@@ -1,44 +1,28 @@
-// need info (url links) from email
-	// - get the links that are needed
-	// - organize that data 
-	// - export a function that gets that data
-	// - insert into db, with checks and shit
-
-// call db for torontomls links and then for each link...
-
-// call skrape with link
-
-// save to db
-
-// need income from padmapper
-
-// update db
-
-// this is the functionality for the db
-
-
-// here is the function
+/**
+ * This file calls the database for torontomls links
+ * Then for each link, calls nightmare scraper to turn house info into db object
+ * then if there is unit and br info, scrapes padmapper for rental income, and updates db object
+ */
 const mongoose = require('mongoose')
 const Mlslink = require('../db/mlslink')
 const mlsScrape = require('../scrapy/skrape')
 
 const mega = async () => {
 
-	// 1. get mls links from db
-
 	const mlslinks = await Mlslink.find({})
-	//console.log(mlslinks)
 
-	// 2. call skrape with link
+	for (let i = 2; i < mlslinks.length; i++) {
+		const link = mlslinks[i].link
 
-	mlsScrape(mlslinks[1].link)
-	// mlslinks.forEach(m => {
-	// 	mlsScrape(m)
-	// })
+		setTimeout(() => {
+			mlsScrape(link)
+			console.log(i, 'hi')
+		}, 10000 * i)
+		console.log(i)
+	}
 
-
-
-	//mongoose.connection.close()
 }
+
+const scrapeOneLink = () => {}
 
 mega()
