@@ -9,7 +9,7 @@ let houseSchema = new Schema({
 		index: true
 	},
 	mls: String,
-	price: String,
+	price: Number,
 	sqft: String,
 	clientRemarks: String,
 	gas: String,
@@ -27,7 +27,8 @@ let houseSchema = new Schema({
 		onebr: { totalUnits: Number, avgPrice: Number },
 		twobr: { totalUnits: Number, avgPrice: Number },
 		threebr: { totalUnits: Number, avgPrice: Number },
-		fourbr: { totalUnits: Number, avgPrice: Number}
+		fourbr: { totalUnits: Number, avgPrice: Number},
+		totalIncome: Number
 	}
 })
 

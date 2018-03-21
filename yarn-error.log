@@ -24,6 +24,7 @@ npm manifest:
     "dependencies": {
       "async": "^2.6.0",
       "base64url": "^2.0.0",
+      "blubird": "^0.0.1-security",
       "body-parser": "^1.18.2",
       "cheerio": "^1.0.0-rc.2",
       "co": "^4.6.0",
@@ -47,7 +48,9 @@ npm manifest:
       "skrape": "node scrapy/skrape",
       "email": "node scripts/index",
       "mega": "node scripts/mega",
-      "fix": "node scripts/mlsScrape"
+      "fix": "node scripts/mlsScrape",
+      "debug": "node debug scripts/mlsScrape.js",
+      "debug:inspect": "node --inspect --inspect-brk scripts/mlsScrape.js"
     }
   }
 
@@ -153,6 +156,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"
     dependencies:
       tweetnacl "^0.14.3"
+  
+  blubird@^0.0.1-security:
+    version "0.0.1-security"
+    resolved "https://registry.yarnpkg.com/blubird/-/blubird-0.0.1-security.tgz#ba3c3a2f9bd4898e54e9919461281be9fe9f4f13"
   
   bluebird@3.5.0:
     version "3.5.0"

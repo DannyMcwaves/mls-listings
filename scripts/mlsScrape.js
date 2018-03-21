@@ -2,529 +2,164 @@ const Nightmare = require('nightmare')
 const House = require('../db/house')
 const mongoose = require('mongoose')
 
+const scrapeHouseLink = require('./scrapeHouseLink')
+
+//const scrapeRentalData = require('./scrapeRentalData')
+const scrapeOneBrRentalData = require('./scrapeRentalData').scrapeOneBrRentalData
+const scrapeTwoBrRentalData = require('./scrapeRentalData').scrapeTwoBrRentalData
+const scrapeThreeBrRentalData = require('./scrapeRentalData').scrapeThreeBrRentalData
+const scrapeFourBrRentalData = require('./scrapeRentalData').scrapeFourBrRentalData
+
+const scrapeOneBrRentalDataZoom = require('./scrapeRentalData').scrapeOneBrRentalDataZoom
+const scrapeTwoBrRentalDataZoom = require('./scrapeRentalData').scrapeTwoBrRentalDataZoom
+const scrapeThreeBrRentalDataZoom = require('./scrapeRentalData').scrapeThreeBrRentalDataZoom
+const scrapeFourBrRentalDataZoom = require('./scrapeRentalData').scrapeFourBrRentalDataZoom
+
+const getExpenses = require('./mlsHelpers').getExpenses
+const getIncomeFromData = require('./mlsHelpers').getIncomeFromData
+const removeDuplicate = require('./mlsHelpers').removeDuplicate
+
+const Promise = require('bluebird')
+
 mongoose.connect('mongodb://localhost:27017/mls_listings')
 
-const scrapeHouseLink = async (url) => {
-	console.log(`Scraping ${url}`)
-
-	const nightmare = new Nightmare({ show: false })
-
-	try {
-
-		const result = await nightmare
-			.goto(url)
-			.evaluate(function() {
-				function getDataFromHtml(child) {
-					let data = {}
-	
-					let wrLocation
-	
-					/*
-					* Top section
-					* Getting "Address" "Listing price" "Taxes" "Bedrooms" "Washrooms"
-					*/
-					const topz = child[0].children[0].children[1].innerText
-	
-					const topText = topz.split('\n')
-	
-					data.address = topText[0]
-					
-					for (var i = 0; i < topText.length; i++) {
-						const str = topText[i]
-	
-						if (str.includes('List')) {
-							data.price = parseInt(str.match(/\d/g).join(""))
-						}
-						if (str.includes('Taxes')) {
-							data.taxes = parseFloat(str.match(/\d+,\d+\.\d+/)[0].replace(',',''))
-						}
-						if (str.includes('Bedrooms')) {
-							let br = 0
-							let brString = str.substring(str.indexOf(':') + 1, str.length)
-							if (brString.includes('+')) {
-								let brs = brString.split('+')
-								brs.forEach(b => {
-									let brNumParse = parseInt(b)
-									br += brNumParse
-								})
-								data.bedrooms = br
-							} else {
-								data.bedrooms = parseInt(brString)
-							}
-	
-							//data.bedrooms = str.substring(str.indexOf(':') + 1, str.length)
-						}
-						if (str.includes('Washrooms')) {
-							data.washrooms = parseInt(str.substring(str.indexOf(':') + 1, str.length))
-							data.wrLocation = topText[i + 1].split(',')
-						}
-					}
-	
-					/*
-					* MLS is below photo. Getting MLS string
-					*/
-					const mls = child[1].children[0].children[0].innerText
-					data.mls = mls.substring(mls.indexOf(':') + 1, mls.length);
-	
-					/*
-					* middle is the 1st column in the middle section
-					* Getting "Kitchens" "Heat" "Square footage" from this section
-					*/
-					const middle = child[2].children[0].children[0].innerText.split('\n')
-	
-					for (var i = 0; i < middle.length; i++) {
-						const str = middle[i]
-	
-						if (str.includes('Kitchens')) {
-							let kitchens = 0
-							let kitchensString = str.substring(str.indexOf(':') + 1, str.length)
-							if (kitchensString.includes('+')) {
-								let kits = kitchensString.split('+')
-								kits.forEach(k => {
-									let kitchenNumParse = parseInt(k)
-									kitchens += kitchenNumParse
-								})
-								data.kitchens = kitchens
-							} else {
-								data.kitchens = parseInt(kitchensString)
-							}
-						}
-	
-						if (str.includes('Heat')) {
-							if (str.indexOf(':') + 1 === str.length) {
-								data.heat = null
-							} else {
-								data.heat = str.substring(str.indexOf(':') + 1, str.length)
-							}
-						}
-						if (str.includes('Apx Sqft')) {
-							if (str.indexOf(':') + 1 === str.length) {
-								data.sqft = null
-							} else {
-								data.sqft = str.substring(str.indexOf(':') + 1, str.length)
-							}
-						}
-					}
-			
-					// this isn't being used but it's the 2nd column in the middle section
-					const middle2 = child[2].children[0].children[1].innerText.split('\n')
-	
-					/*
-					* Middle3 is the 3rd column in the middle section
-					* Getting "Hydro" and "Gas" values
-					*/
-					const middle3 = child[2].children[0].children[2].innerText.split('\n')
-	
-					for (var i = 0; i < middle3.length; i++) {
-						const str = middle3[i]
-						if (str.includes('Hydro')) {
-							// check if empty
-							if (str.indexOf(':') + 1 === str.length) {
-								data.hydro = null
-							} else {
-								data.hydro = str.substring(str.indexOf(':') + 1, str.length)
-							}
-						}
-						if (str.includes('Gas')) {
-							// check if empty
-							if (str.indexOf(':') + 1 === str.length) {
-								data.gas = null
-							} else {
-								data.gas = str.substring(str.indexOf(':') + 1, str.length)
-							}
-						}
-					}
-	
-					/**
-					* Client Remarks is just some text at the bottom of the house listing
-					*/
-					const clientRmrks = child[7].innerText
-	
-					data.clientRemarks = clientRmrks.substring(clientRmrks.indexOf(':') + 1, clientRmrks.length)
-					
-					return data
-				}
-
-				var elements = Array.from(document.getElementsByClassName('formitem legacyBorder formgroup vertical'));
-				return elements.map(function(element) {
-					const child = element.children
-	
-					// v - the object to create and return
-					//let data = {}
-					let data = getDataFromHtml(child)
-	
-					/**
-					* roomsArray is the section above "client remarks" and below the 3 column info
-					* Turning "Rooms" and "Level" into array of objects for "parsedRooms". Level is key Room is value
-						Check parsedRooms object below for schema
-					*/
-					const roomsArray = child[5].children
-					let rooms = []
-					for (var i = 0; i < roomsArray.length; i++ ) {
-						rooms.push(roomsArray.item(i).innerText)
-					}
-	
-					let parsedRooms = { 
-						bsmt: { rooms: [], washrooms: 0, },
-						main: { rooms: [], washrooms: 0, },
-						second: { rooms: [], washrooms: 0, },
-						third: { rooms: [], washrooms: 0, },
-						errs: { error: false, messages: [] }
-					}
-	
-					if (rooms.length === 0) {
-						parsedRooms.errs.error = true
-						parsedRooms.errs.messages.push('Missing room information.')
-					} else {
-						// Adding room string to array of rooms in levels field for parsedRooms object
-						rooms.forEach(r => {
-							if (r !== '') {
-								const str = r.split('\n')
-	
-								const level = str[2]
-								const room = str[1]
-	
-								if (level.includes('Bsmt') || level.includes('Lower')) {
-									parsedRooms.bsmt.rooms.push(room)
-								}
-								if (level.includes('Main') || level.includes('Ground')) {
-									parsedRooms.main.rooms.push(room)
-								}
-								if (level.includes('2nd')) {
-									parsedRooms.second.rooms.push(room)
-								}
-								if (level.includes('3rd')) {
-									parsedRooms.third.rooms.push(room)
-								}
-							}
-						})
-					}
-	
-					/**
-					* GETTING THE UNITS AND BEDROOMS
-					* LOGIC
-					*/
-	
-					// Need the Washroom LOCATIONS = wrLocations
-					// Need the ROOMS + LEVELs object = parsedRooms
-					// Need the # Kitchens!
-	
-					// lets first organize washroom + room location by object
-	
-					// add washrooms to parsedRooms object where applicable
-					if (!parsedRooms.errs.error) {
-						let missingWr = false
-						data.wrLocation.forEach(w => {
-							const str = w.split('x')
-							if (str.length === 3) {
-								if (w.includes('Bsmt') || w.includes('Lower')) {
-									const num = parseInt(str[0])
-									parsedRooms.bsmt.washrooms += num
-								}
-								if (w.includes('Main') || w.includes('Ground')) {
-									const num = parseInt(str[0])
-									parsedRooms.main.washrooms += num
-								}
-								if (w.includes('2nd')) {
-									const num = parseInt(str[0])
-									parsedRooms.second.washrooms += num
-								}
-								if (w.includes('3rd')) {
-									const num = parseInt(str[0])
-									parsedRooms.third.washrooms += num
-								}
-							} else {
-								missingWr = true
-							}
-						})
-						if (missingWr) {
-							parsedRooms.errs.error = true
-							parsedRooms.errs.messages.push('Missing washroom information')
-						}
-					} 
-	
-					// create a units array
-					// units.length = # of units. each element contains a br #
-					let units
-					let unitAndBr = {
-						err: {
-							error: false,
-							message: []
-						},
-						units: []
-					}
-	
-	
-					// NOW PARSEDROOMS IS PARSED.
-					// EACH LEVEL HAS EVERY ROOM AND WASHROOM IN IT
-					// NOW YOU MUST FIGURE OUT UNITS + BEDROOMS OF THE CURRENT ADDRESS!
-					// USING THE PARSEDROOMS OBJECT...
-	
-					if (!parsedRooms.errs.error) {
-						const { bsmt, main, second, third } = parsedRooms
-						units = [] // make as array
-						// 1 kitchen = 1 unit...get all rooms into this bitch
-						if (data.kitchens === 1) {
-							let num = 0
-							if (bsmt.rooms.length > 0) {
-								bsmt.rooms.forEach(b => {
-									if (b === "Master") num++
-									if (b === "2nd Br") num++
-									if (b === "3rd Br") num++
-									if (b === "4th Br") num++
-									if (b === "5th Br") num++
-									if (b === "Br") num++
-									if (b === "Rec") num++
-								})
-							}
-							if (main.rooms.length > 0) {
-								main.rooms.forEach(m => {
-									if (m === "Master") num++
-									if (m === "2nd Br") num++
-									if (m === "3rd Br") num++
-									if (m === "4th Br") num++
-									if (m === "5th Br") num++
-									if (m === "Br") num++
-								})
-							}
-							if (second.rooms.length > 0) {
-								second.rooms.forEach(s => {
-									if (s === "Master") num++
-									if (s === "2nd Br") num++
-									if (s === "3rd Br") num++
-									if (s === "4th Br") num++
-									if (s === "5th Br") num++
-									if (s === "Br") num++
-									if (s === "Rec") num++
-								})
-							}
-							if (third.rooms.length > 0) {
-								third.rooms.forEach(t => {
-									if (t === "Master") num++
-									if (t === "2nd Br") num++
-									if (t === "3rd Br") num++
-									if (t === "4th Br") num++
-									if (t === "5th Br") num++
-									if (t === "Br") num++
-									if (t === "Rec") num++
-								})
-							}
-							unitAndBr.units.push(num)
-						} else if (data.kitchens >= 2) {
-							// check if level has washroom & kitchen
-							let bsmtKitchen = false
-							let bsmtWashroom = false
-							let mainKitchen = false
-							let mainWashroom = false
-							let secondKitchen = false
-							let secondWashroom = false
-							let thirdKitchen = false
-							let thirdWashroom = false
-	
-							bsmt.rooms.forEach(b => {
-								if (b === 'Kitchen') {
-									bsmtKitchen = true
-								}
-							})
-							if (bsmt.washrooms > 0) {
-								bsmtWashroom = true
-							}
-							main.rooms.forEach(m => {
-								if (m === 'Kitchen') {
-									mainKitchen = true
-								}
-							})
-							if (main.washrooms > 0) {
-								mainWashroom = true
-							}
-							second.rooms.forEach(s => {
-								if (s === 'Kitchen') {
-									secondKitchen = true
-								}
-							})
-							if (second.washrooms > 0) {
-								secondWashroom = true
-							}
-							third.rooms.forEach(t => {
-								if (t === 'Kitchen') {
-									thirdKitchen = true
-								}
-							})
-							if (third.washrooms > 0) {
-								thirdWashroom = true
-							}
-	
-							//
-							// THE GOD DAMN MAGIC SHOW!!!!!!
-							//
-							if (bsmtKitchen) {
-								if (bsmtWashroom) {
-									if (mainKitchen) {
-										units.push(['bsmt'])
-										if (mainWashroom) {
-											// these need fix
-											if (secondKitchen || second.rooms.length === 0) {
-												units.push(['main'])
-											}
-											if (second.rooms.length > 0 && third.rooms.length === 0) {
-												units.push(['main', 'second'])
-											}
-										} else if (!mainWashroom) {
-											if (secondWashroom) {
-												units.push(['main', 'second']);
-											}
-										}
-									}
-								} else if (!bsmtWashroom) {
-									if (mainWashroom) {
-										units.push(['bsmt', 'main'])
-									}
-								}
-							} else if (!bsmtKitchen) {
-								if (mainKitchen) {
-									if (second.rooms.length === 0) {
-										units.push(['bsmt', 'main'])
-									} else if (second.rooms.length > 0) {
-										if (secondKitchen && secondWashroom) {
-											units.push(['bsmt', 'main'])
-										} else if (third.rooms.length === 0) {
-											units.push(['bsmt', 'main', 'second'])
-										}
-									}
-								} else if (!mainKitchen) {
-									if (secondKitchen) {
-										units.push(['bsmt', 'main', 'second'])
-									}
-								}
-							}
-							if (third.rooms.length === 0) {
-								if (secondKitchen) {
-									if (secondWashroom) {
-										if (mainKitchen) {
-											units.push(['second'])
-										}
-									} else if (!secondWashroom) {
-										if (mainWashroom) {
-											units.push(['main', 'second'])
-										}
-									}
-								}
-							} else if (third.rooms.length > 0) {
-								if (second.rooms.length > 0) {
-									if (mainKitchen) {
-										if (!secondKitchen) {
-											if (!thirdKitchen) {
-												units.push(['main', 'second', 'third'])
-											} else {
-												units.push(['main', 'second'])
-											}
-										}
-									} else if (!mainKitchen) {
-										if (secondKitchen) {
-											units.push(['main', 'second'])
-										}
-									}
-								}
-							} else if (thirdKitchen) {
-									if (thirdWashroom) {
-										if (secondKitchen) {
-											units.push(['third'])
-										}
-									}
-							} else if (!thirdKitchen) {
-									if (secondKitchen) {
-										units.push(['second', 'third'])
-									}
-							}
-	
-						}
-					} else {
-						 // if here then there are errors
-						unitAndBr.err.error = true
-						parsedRooms.errs.messages.forEach(m => {
-							unitAndBr.err.message.push(m)
-						})
-					}
-	
-					// ASSUME THAT THE UNITS ARE DONE PROPERLY
-					// NOW COUNT THE BEDROOMS FOR EACH UNIT
-					// AND YOU HAVE THE HOUSE OBJECT
-	
-					if (!parsedRooms.errs.error) {
-	
-						units.forEach(u => {
-							let num = 0
-							u.forEach(r => {
-								parsedRooms[r].rooms.forEach(pr => {
-									if (pr === "Master") num++
-									if (pr === "2nd Br") num++
-									if (pr === "3rd Br") num++
-									if (pr === "4th Br") num++
-									if (pr === "5th Br") num++
-									if (pr === "Br") num++
-									if (r === "bsmt") {
-										if (pr === "Rec") num++
-									}
-								})
-							})
-							unitAndBr.units.push(num)
-						})
-					}
-					data.unitAndBr = unitAndBr
-					
-	
-					return {
-						data
-					}
-				})
-			})
-			.end()
-
-		return result
-	} catch(e) {
-		console.error(e)
-	}
-}
-
-const houseToDb = async (url) => {
-	const houseList = await scrapeHouseLink(url)
-
-	// houseList is an array of house objects scraped from torontomls site
-	// foreach of the items:
-	// save as house db object 
-	// need to scrape padmapper if there is units & brs
-	// then update that db object
-	// then the db is good to go....
+/**
+ * mlsLinkToDb = function
+ * Takes a link (Url)
+ * This link goes to a torontomls.net website
+ * Which contains >= 1 house properties
+ * scrapeHouseLink() uses nightmare.js to scrape the website info
+ * And returns an array of house objects created from the scraped info
+ * THEN it inserts the scraped house objects into the DB
+ *  
+ * Then houses WITH bedroom + unit info
+ * They need more info from padmapper (avg rental income for the bedrooms)
+ * scrapeRentalData() takes the address of the house + its units and bedrooms
+ * And uses nightmare.js to scrape rental properties that are relevant to that house object
+ * And gets the avg income for the houses 
+ * And updates the db object
+ */
+const mlsLinkToDb = async (url) => {
+	const houseList = await scrapeHouseLink(url).catch((e) => {throw e})
 
 	let houseArray = []
+	let housesWithUnitInfo = []
+	let zz = 0
 
 	houseList.forEach(h => {
 		const { data } = h // data is the object containing the data
 
-		houseArray.push({
+		let unit = null
+		if (!data.unitAndBr.err.error) {
+			unit = data.unitAndBr.units.length
+		}
+
+		const expenses = getExpenses(data.sqft, data.heat)
+
+		let gas = expenses.gas
+		let hydro = expenses.hydro
+
+		//let price = parseInt(data.price.replace(/\D+/g, ""))
+
+		const house = {
 			address: data.address || null,
 			mls: data.mls || null,
       price: data.price || null,
-      sqft: data.sqft || null,
-      clientRemarks: data.clientRemarks || null,
-      gas: data.gas || null,
-      heat: data.heat || null,
-      hydro: data.hydro || null,
+			clientRemarks: data.clientRemarks || null,
+			sqft: data.sqft,
+      gas,
+      hydro,
       taxes: data.taxes || null,
-      unitAndBr: data.unitAndBr || null
-		})
+			unitAndBr: data.unitAndBr || null,
+			income: { totalIncome: 0 },
+			unit,
+			url
+		}
+		houseArray.push(house)
+		
+		if (!house.unitAndBr.err.error) {
+			housesWithUnitInfo.push(house)
+		}
 	})
 
 	try {
 		await insertHouses(houseArray)
 	} catch(e) {
-		console.error(e)
+		mongoose.disconnect()
+		throw e
 	}
 
-	
+	/**
+	 * This line, takes the array of housesWithUnitInfo
+	 * And the rentalDataPromise function
+	 * and runs the nightmare scrapeing code one after the other
+	 */
+	const rentalDataArray = await Promise.mapSeries(housesWithUnitInfo, rentalDataPromise)
+		.catch((err) => {
+			console.log('swag')
+			return null
+		})
+
+	// here check if the house has rental info for each unit
+	// if not then try running it again but with another zoom out
+	// then update the house db obj
+
+
+	let updateHousePromises = []
+
+	for (var i = 0; i < rentalDataArray.length; i++) {
+		const rentalIndex = rentalDataArray[i]
+		const houseIndex = housesWithUnitInfo[i]
+
+		const income = getIncomeFromData(rentalIndex, houseIndex.unitAndBr.units)
+		const address = houseIndex.address
+		let newGas = 0
+		let newHydro = 0
+		if (income.totalIncome > 0 && houseIndex.gas === 0 && houseIndex.hydro === 0) {
+			newGas = income.totalIncome * 0.02
+			newHydro = income.totalIncome * 0.02
+			// now update the object with these values if needs updating
+		}
+
+		updateHousePromises.push(updateHouseWithIncome(address, income, newGas, newHydro))
+	}
+
+	try {
+		await Promise.all(updateHousePromises)
+	}
+	catch(e) {
+		mongoose.disconnect()
+		console.log(e)
+	}	
 
 	console.log('awaited')
 	mongoose.disconnect()
+}
+
+const updateHouseWithIncome = (address, income, gas, hydro) => {
+	return new Promise((resolve, reject) => {
+		if (gas > 0 && hydro > 0) {
+			House.findOneAndUpdate(
+				{ address },
+				{ $set: { income, gas, hydro } },
+				{ new: true },
+				(err, doc) => {
+					if (err) reject(err)
+					else resolve(doc)
+				}
+			)
+		} else {
+			House.findOneAndUpdate(
+				{ address },
+				{ $set: { income } },
+				{ new: true },
+				(err, doc) => {
+					if (err) reject(err)
+					else resolve(doc)
+				}
+			)
+		}
+	})
 }
 
 const insertHouses = (houseArray) => {
@@ -540,4 +175,80 @@ const insertHouses = (houseArray) => {
 	})
 }
 
-houseToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=72936b6ccfeb4acfb478db7ddadc834b&App=TREB')
+const rentalDataPromise = async (unit) => {
+	return new Promise(async (resolve, reject) => {
+		const units = removeDuplicate(unit.unitAndBr.units)
+		console.log(`units: ${units}`)
+		let brData = []
+
+		if (units.includes(1)) {
+			console.log('scraping onebr padmapper')
+			let onebr = await scrapeOneBrRentalData(unit.address).catch(e => reject(e))
+			if (onebr.length < 3) {
+				console.log('rescraping')
+				onebr = await scrapeOneBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...onebr
+			]
+		}
+		if (units.includes(2)) {
+			console.log('scraping twobr padmapper')
+			let twobr = await scrapeTwoBrRentalData(unit.address).catch(e => reject(e))
+			if (twobr.length < 3) {
+				console.log('rescraping')
+				twobr = await scrapeTwoBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...twobr
+			]
+		}
+		if (units.includes(3)) {
+			console.log('scraping threebr padmapper')
+			let threebr = await scrapeThreeBrRentalData(unit.address).catch(e => reject(e))
+			if (threebr.length < 3) {
+				console.log('rescraping')
+				threebr = await scrapeThreeBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...threebr
+			]
+		}
+		if (units.includes(4)) {
+			console.log('scraping fourbr padmapper')
+			let fourbr = await scrapeFourBrRentalData(unit.address).catch(e => reject(e))
+			if (fourbr.length < 3) {
+				console.log('rescraping')
+				fourbr = await scrapeFourBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...fourbr
+			]
+		}
+
+		if (brData) {
+			resolve(brData)
+		} else {
+			reject('padmapper error')
+		}
+
+		//const rentalArray = await scrapeRentalData(unit.address).catch(e => reject(e))
+
+		//console.log(rentalArray)
+		// if (rentalArray) {
+		// 	resolve(rentalArray)
+		// } 
+	})
+}
+
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=d26cb297cfff4e1c95eb2e08b4d9f148&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=fd689e2d68d54f339afb7a11f6e1980d&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=a4bfa6a07670419a8ab4c7411f94dd0b&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=9ce0278825d640adb54d7250c016ab0e&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=9facc19d642a443483a32f3b1dd331f2&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=80d895f0ece7403cbbe7496d2c2098bb&App=TREB')
+mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=4b8624f9d268460084000f52b9d5b97a&App=TREB')

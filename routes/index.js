@@ -1,11 +1,11 @@
 let express = require('express');
 let router = express.Router();
-let findHomes = require('../db/client').Find;
+let findHouses = require('../db/client').Find;
 
 /* GET home page. */
 router
     .get('/', function(req, res) {
-        findHomes().then(data => {
+        findHouses().then(data => {
             res.send(data);
         }).catch(err => {
             throw new Error(err);

@@ -8,6 +8,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "base64url": "^2.0.0",
+    "blubird": "^0.0.1-security",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "co": "^4.6.0",
@@ -31,6 +32,8 @@
     "skrape": "node scrapy/skrape",
     "email": "node scripts/index",
     "mega": "node scripts/mega",
-    "fix": "node scripts/mlsScrape"
+    "fix": "node scripts/mlsScrape",
+    "debug": "node debug scripts/mlsScrape.js",
+    "debug:inspect": "node --inspect --inspect-brk scripts/mlsScrape.js"
   }
 }

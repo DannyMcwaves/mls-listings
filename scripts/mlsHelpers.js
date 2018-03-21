@@ -1,133 +1,140 @@
-const getDataFromHtml = (child) => {
-	// TURNING THE SCRAPED HTML INNERTEXT INTO AN OBJECT
-	let data = {}
-
-	let wrLocation
-
-	/*
-	* Top section
-	* Getting "Address" "Listing price" "Taxes" "Bedrooms" "Washrooms"
-	*/
-	const topz = child[0].children[0].children[1].innerText
-
-	const topText = topz.split('\n')
-
-	data.address = topText[0]
-	
-	for (var i = 0; i < topText.length; i++) {
-		const str = topText[i]
-
-		if (str.includes('List')) {
-			data.price = parseInt(str.match(/\d/g).join(""))
-		}
-		if (str.includes('Taxes')) {
-			data.taxes = parseFloat(str.match(/\d+,\d+\.\d+/)[0].replace(',',''))
-		}
-		if (str.includes('Bedrooms')) {
-			let br = 0
-			let brString = str.substring(str.indexOf(':') + 1, str.length)
-			if (brString.includes('+')) {
-				let brs = brString.split('+')
-				brs.forEach(b => {
-					let brNumParse = parseInt(b)
-					br += brNumParse
-				})
-				data.bedrooms = br
-			} else {
-				data.bedrooms = parseInt(brString)
+const getExpenses = (sqft, heat) => {
+	if (sqft && heat) {
+		// get value from sqft
+		const squarefoot = sqft.split('-')
+		const sqftNum = (parseInt(squarefoot[0]) + parseInt(squarefoot[1])) / 2
+		
+		// take sqftNum and heat type and you get value for gas and hydro 
+		if (heat.includes('Water') || heat.includes('Forced Air') || heat.includes('Radiant')) {
+			// gas = (20+0.13*AK1*0.113+(-0.01)*AK1*0.113+0.054*AK1*0.113+0.11*AK1*0.113)*1.13
+			// hydro = (0.031*B5)+(0.027*B5)
+			gas = parseFloat((20+0.13*sqftNum*0.113+(-0.01)*sqftNum*0.113+0.054*sqftNum*0.113+0.11*sqftNum*0.113)*1.13)
+			hydro = parseFloat((0.031*sqftNum)+(0.027*sqftNum))
+			return {
+				gas, hydro
 			}
-
-			//data.bedrooms = str.substring(str.indexOf(':') + 1, str.length)
+		} 
+		// TBD else if (heat.includes('Electric')) {}
+		else {
+			// need rental income and 4% of that is the expenses...do this client side...
+			return {
+				gas: 0,
+				hydro: 0
+			}
 		}
-		if (str.includes('Washrooms')) {
-			data.washrooms = parseInt(str.substring(str.indexOf(':') + 1, str.length))
-			data.wrLocation = topText[i + 1].split(',')
+	} else {
+		return {
+			gas: 0,
+			hydro: 0
 		}
 	}
-
-	/*
-	* MLS is below photo. Getting MLS string
-	*/
-	const mls = child[1].children[0].children[0].innerText
-	data.mls = mls.substring(mls.indexOf(':') + 1, mls.length);
-
-	/*
-	* middle is the 1st column in the middle section
-	* Getting "Kitchens" "Heat" "Square footage" from this section
-	*/
-	const middle = child[2].children[0].children[0].innerText.split('\n')
-
-	for (var i = 0; i < middle.length; i++) {
-		const str = middle[i]
-
-		if (str.includes('Kitchens')) {
-			let kitchens = 0
-			let kitchensString = str.substring(str.indexOf(':') + 1, str.length)
-			if (kitchensString.includes('+')) {
-				let kits = kitchensString.split('+')
-				kits.forEach(k => {
-					let kitchenNumParse = parseInt(k)
-					kitchens += kitchenNumParse
-				})
-				data.kitchens = kitchens
-			} else {
-				data.kitchens = parseInt(kitchensString)
-			}
-		}
-
-		if (str.includes('Heat')) {
-			if (str.indexOf(':') + 1 === str.length) {
-				data.heat = null
-			} else {
-				data.heat = str.substring(str.indexOf(':') + 1, str.length)
-			}
-		}
-		if (str.includes('Apx Sqft')) {
-			if (str.indexOf(':') + 1 === str.length) {
-				data.sqft = null
-			} else {
-				data.sqft = str.substring(str.indexOf(':') + 1, str.length)
-			}
-		}
-	}
-
-	// this isn't being used but it's the 2nd column in the middle section
-	const middle2 = child[2].children[0].children[1].innerText.split('\n')
-
-	/*
-	* Middle3 is the 3rd column in the middle section
-	* Getting "Hydro" and "Gas" values
-	*/
-	const middle3 = child[2].children[0].children[2].innerText.split('\n')
-
-	for (var i = 0; i < middle3.length; i++) {
-		const str = middle3[i]
-		if (str.includes('Hydro')) {
-			// check if empty
-			if (str.indexOf(':') + 1 === str.length) {
-				data.hydro = null
-			} else {
-				data.hydro = str.substring(str.indexOf(':') + 1, str.length)
-			}
-		}
-		if (str.includes('Gas')) {
-			// check if empty
-			if (str.indexOf(':') + 1 === str.length) {
-				data.gas = null
-			} else {
-				data.gas = str.substring(str.indexOf(':') + 1, str.length)
-			}
-		}
-	}
-
-	/**
-	* Client Remarks is just some text at the bottom of the house listing
-	*/
-	const clientRmrks = child[7].innerText
-
-	data.clientRemarks = clientRmrks.substring(clientRmrks.indexOf(':') + 1, clientRmrks.length)
-	
-	return data
 }
 
-exports.getDataFromHtml = getDataFromHtml
+exports.getExpenses = getExpenses
+
+const getIncomeFromData = (arrayOfPrices, units) => {
+	let onebr = 0;
+	let onecount = 0;
+	let twobr = 0;
+	let twocount = 0;
+	let threebr = 0;
+	let threecount = 0;
+	let fourbr = 0;
+	let fourcount = 0;
+
+	let income = {
+		onebr: { totalUnits: 0, avgPrice: 0	},
+		twobr: { totalUnits: 0, avgPrice: 0	},
+		threebr: { totalUnits: 0, avgPrice: 0 },
+		fourbr: { totalUnits: 0, avgPrice: 0 }
+	}
+
+	// first add them
+	// check if units are the same
+	//const doubleCheckArray = removeDuplicate(arrayOfPrices)
+	//doubleCheckArray.forEach(r => {
+	arrayOfPrices.forEach(r => {
+		if (r !== null) {
+			if (r.br === 1) {
+				onebr += r.price
+				onecount++
+			}
+			if (r.br === 2) {
+				twobr += r.price
+				twocount++
+			}
+			if (r.br === 3) {
+				threebr += r.price
+				threecount++
+			}
+			if (r.br >= 4) {
+				fourbr += r.price
+				fourcount++
+			}
+		}
+	})
+
+	income.onebr.avgPrice = onebr / onecount || 0
+	income.onebr.totalUnits = onecount || 0
+	income.twobr.avgPrice = twobr / twocount || 0
+	income.twobr.totalUnits = twocount || 0
+	income.threebr.avgPrice = threebr / threecount || 0
+	income.threebr.totalUnits = threecount || 0
+	income.fourbr.avgPrice = fourbr / fourcount || 0
+	income.fourbr.totalUnits = fourcount || 0
+
+	// calculate total income with units array
+	// units = [1, 2] or [3] or [2,2,3] or [1,4]
+	let unitIncome = {
+		totalIncome: 0
+	}
+	removeDuplicate(units).forEach(u => {
+		if (u === 1) {
+			unitIncome.onebr = income.onebr
+		} else if (u === 2) {
+			unitIncome.twobr = income.twobr
+		} else if (u === 3) {
+			unitIncome.threebr = income.threebr
+		} else if (u >= 4) {
+			unitIncome.fourbr = income.fourbr
+		}
+	})
+
+	units.forEach(u => {
+		if (u === 1) {
+			unitIncome.totalIncome += income.onebr.avgPrice
+		} else if (u === 2) {
+			unitIncome.totalIncome += income.twobr.avgPrice
+		} else if (u === 3) {
+			unitIncome.totalIncome += income.threebr.avgPrice
+		} else if (u >= 4) {
+			unitIncome.totalIncome += income.fourbr.avgPrice
+		}
+	})
+	
+	if (income.onebr.avgPrice === 0 && income.twobr.avgPrice === 0 && income.threebr.avgPrice === 0 && income.fourbr.avgPrice === 0) {
+		return null
+	}
+	
+	return unitIncome
+}
+
+const removeDuplicate = (arr) => {
+	const helperMap = {};
+	const result = [];
+
+	for (let i = 0; i < arr.length; i++) {
+		const item = arr[i];
+
+		if (!helperMap[item]) {
+			result[result.length] = item;
+
+			helperMap[item] = true;
+		}
+	}
+
+	return result;
+};
+
+exports.getIncomeFromData = getIncomeFromData
+exports.removeDuplicate = removeDuplicate

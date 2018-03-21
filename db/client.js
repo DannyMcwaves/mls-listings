@@ -1,10 +1,8 @@
-"use strict";
+let House = require("./house");
 
-let Home = require("./home");
-
-const FindHomes = () => {
+const FindHouses = () => {
     return new Promise((resolve, reject) => {
-        Home.default.find({}, (err, res) => {
+        House.find({}, (err, res) => {
             if (err) {
                 reject(err);
             } else {
@@ -14,4 +12,4 @@ const FindHomes = () => {
     })
 }
 
-exports.Find = FindHomes;
+exports.Find = FindHouses;
