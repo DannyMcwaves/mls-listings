@@ -14,7 +14,7 @@
     "co": "^4.6.0",
     "cookie-parser": "^1.4.3",
     "debug": "^3.1.0",
-    "electron": "^1.8.2",
+    "electron": "^1.8.4",
     "express": "^4.16.2",
     "google-auth-library": "0.*",
     "googleapis": "^25.0.0",
