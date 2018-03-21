@@ -4,7 +4,7 @@ let findHouses = require('../db/client').Find;
 
 /* GET home page. */
 router
-    .get('/', function(req, res) {
+    .get('/api', function(req, res) {
         findHouses().then(data => {
             res.send(data);
         }).catch(err => {
