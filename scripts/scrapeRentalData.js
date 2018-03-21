@@ -6,6 +6,7 @@ const twobr = '#root > div > div > div > div > div.col-second > div > div > div 
 const threebr = '#root > div > div > div > div > div.col-second > div > div > div > div.p-filter > div > div > div:nth-child(3) > div > div.col-filter-wrap > div > div > div:nth-child(4)'
 const fourbr = '#root > div > div > div > div > div.col-second > div > div > div > div.p-filter > div > div > div:nth-child(3) > div > div.col-filter-wrap > div > div > div:nth-child(5)'
 const zoomOut = '.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom > div > div > button:nth-child(3)'
+const input = 'input[name="locationSearch"]'
 
 const scrapeRentalData = async (address) => {
 	console.log(`Scrapeing ${address} padmapper`)
@@ -13,9 +14,9 @@ const scrapeRentalData = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(onebr)
@@ -62,9 +63,9 @@ const scrapeOneBrRentalData = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(onebr)
@@ -106,9 +107,9 @@ const scrapeTwoBrRentalData = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(twobr)
@@ -150,9 +151,9 @@ const scrapeThreeBrRentalData = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(threebr)
@@ -194,9 +195,9 @@ const scrapeFourBrRentalData = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(fourbr)
@@ -244,11 +245,11 @@ const scrapeOneBrRentalDataZoom = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(zoomOut)
 			.click(zoomOut)
-			.wait(500)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(onebr)
@@ -290,11 +291,11 @@ const scrapeTwoBrRentalDataZoom = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(zoomOut)
 			.click(zoomOut)
-			.wait(500)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(twobr)
@@ -336,11 +337,11 @@ const scrapeThreeBrRentalDataZoom = async (address) => {
 	try {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
-			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.wait(input)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(zoomOut)
 			.click(zoomOut)
-			.wait(500)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(threebr)
@@ -383,10 +384,10 @@ const scrapeFourBrRentalDataZoom = async (address) => {
 		const result = await nightmare
 			.goto('https://www.padmapper.com/apartments/toronto-on')
 			.wait(1000)
-			.type('input[name="locationSearch"]', `${address}, Toronto, ON, Canada \u000d`)
-			.wait(3000)
+			.type(input, `${address}, Toronto, ON, Canada \u000d`)
+			.wait(zoomOut)
 			.click(zoomOut)
-			.wait(500)
+			.wait(longTermBtn)
 			.click(longTermBtn)
 			.wait(500)
 			.click(fourbr)

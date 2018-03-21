@@ -21,8 +21,8 @@ const removeDuplicate = require('./mlsHelpers').removeDuplicate
 
 const Promise = require('bluebird')
 
-mongoose.connect('mongodb://mlsadmin:mlspassword@localhost:27017/mls_listings')
-
+//mongoose.connect('mongodb://mlsadmin:mlspassword@localhost:27017/mls_listings')
+mongoose.connect('mongodb://localhost:27017/mls_listings')
 /**
  * mlsLinkToDb = function
  * Takes a link (Url)
