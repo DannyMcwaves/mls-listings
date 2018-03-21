@@ -34,6 +34,7 @@
     "mega": "node scripts/mega",
     "fix": "node scripts/mlsScrape",
     "debug": "node debug scripts/mlsScrape.js",
-    "debug:inspect": "node --inspect --inspect-brk scripts/mlsScrape.js"
+    "debug:inspect": "node --inspect --inspect-brk scripts/mlsScrape.js",
+    "xscrape": "xvfb-run --server-args='-screen 0 1024x768x24' node scripts/mlsScrape.js"
   }
 }

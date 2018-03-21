@@ -82,12 +82,12 @@ const mlsLinkToDb = async (url) => {
 		}
 	})
 
-//	try {
-//		await insertHouses(houseArray)
-//	} catch(e) {
-//		mongoose.disconnect()
-//		throw e
-//	}
+	try {
+		await insertHouses(houseArray)
+	} catch(e) {
+		mongoose.disconnect()
+		throw e
+	}
 
 	/**
 	 * This line, takes the array of housesWithUnitInfo
@@ -124,14 +124,14 @@ const mlsLinkToDb = async (url) => {
 		updateHousePromises.push(updateHouseWithIncome(address, income, newGas, newHydro))
 	}
 
-/*	try {
+	try {
 		await Promise.all(updateHousePromises)
 	}
 	catch(e) {
 		mongoose.disconnect()
 		console.log(e)
 	}	
-*/
+
 	console.log('awaited')
 	mongoose.disconnect()
 }
@@ -229,7 +229,7 @@ const rentalDataPromise = async (unit) => {
 				...fourbr
 			]
 		}
-console.log(brData);
+
 		if (brData) {
 			resolve(brData)
 		} else {
