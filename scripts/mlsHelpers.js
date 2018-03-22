@@ -112,10 +112,6 @@ const getIncomeFromData = (arrayOfPrices, units) => {
 		}
 	})
 	
-	if (income.onebr.avgPrice === 0 && income.twobr.avgPrice === 0 && income.threebr.avgPrice === 0 && income.fourbr.avgPrice === 0) {
-		return null
-	}
-	
 	return unitIncome
 }
 

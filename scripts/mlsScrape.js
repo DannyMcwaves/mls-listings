@@ -21,8 +21,8 @@ const removeDuplicate = require('./mlsHelpers').removeDuplicate
 
 const Promise = require('bluebird')
 
-mongoose.connect('mongodb://albert:td0ttd0t@localhost:27017/mls_listings')
-//mongoose.connect('mongodb://localhost:27017/mls_listings')
+//mongoose.connect('mongodb://albert:td0ttd0t@localhost:27017/mls_listings')
+mongoose.connect('mongodb://localhost:27017/mls_listings')
 /**
  * mlsLinkToDb = function
  * Takes a link (Url)
@@ -247,9 +247,9 @@ const rentalDataPromise = async (unit) => {
 
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=d26cb297cfff4e1c95eb2e08b4d9f148&App=TREB')
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=fd689e2d68d54f339afb7a11f6e1980d&App=TREB')
-mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=a4bfa6a07670419a8ab4c7411f94dd0b&App=TREB')
+//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=a4bfa6a07670419a8ab4c7411f94dd0b&App=TREB')
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=9ce0278825d640adb54d7250c016ab0e&App=TREB')
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=9facc19d642a443483a32f3b1dd331f2&App=TREB')
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=80d895f0ece7403cbbe7496d2c2098bb&App=TREB')
 //mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=4b8624f9d268460084000f52b9d5b97a&App=TREB')
-
+mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=45b77f790488456ea05ac89203530654&App=TREB')
