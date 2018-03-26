@@ -1,3 +1,5 @@
 node_modules/
 .idea
 .vscode
+client_secret.json
+.DS_Store
