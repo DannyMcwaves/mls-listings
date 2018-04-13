@@ -1,3 +1,13 @@
+const scrapeOneBrRentalData = require('./scrapeRentalData').scrapeOneBrRentalData
+const scrapeTwoBrRentalData = require('./scrapeRentalData').scrapeTwoBrRentalData
+const scrapeThreeBrRentalData = require('./scrapeRentalData').scrapeThreeBrRentalData
+const scrapeFourBrRentalData = require('./scrapeRentalData').scrapeFourBrRentalData
+
+const scrapeOneBrRentalDataZoom = require('./scrapeRentalData').scrapeOneBrRentalDataZoom
+const scrapeTwoBrRentalDataZoom = require('./scrapeRentalData').scrapeTwoBrRentalDataZoom
+const scrapeThreeBrRentalDataZoom = require('./scrapeRentalData').scrapeThreeBrRentalDataZoom
+const scrapeFourBrRentalDataZoom = require('./scrapeRentalData').scrapeFourBrRentalDataZoom
+
 const getExpenses = (sqft, heat) => {
 	if (sqft && heat) {
 		// get value from sqft
@@ -134,3 +144,68 @@ const removeDuplicate = (arr) => {
 
 exports.getIncomeFromData = getIncomeFromData
 exports.removeDuplicate = removeDuplicate
+
+const rentalDataPromise = async (unit) => {
+	return new Promise(async (resolve, reject) => {
+		const units = removeDuplicate(unit.unitAndBr.units)
+		console.log(`units: ${units}`)
+		let brData = []
+
+		if (units.includes(1)) {
+			console.log('scraping onebr padmapper')
+			let onebr = await scrapeOneBrRentalData(unit.address).catch(e => reject(e))
+			if (onebr.length < 3) {
+				console.log('rescraping')
+				onebr = await scrapeOneBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...onebr
+			]
+		}
+		if (units.includes(2)) {
+			console.log('scraping twobr padmapper')
+			let twobr = await scrapeTwoBrRentalData(unit.address).catch(e => reject(e))
+			if (twobr.length < 3) {
+				console.log('rescraping')
+				twobr = await scrapeTwoBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...twobr
+			]
+		}
+		if (units.includes(3)) {
+			console.log('scraping threebr padmapper')
+			let threebr = await scrapeThreeBrRentalData(unit.address).catch(e => reject(e))
+			if (threebr.length < 3) {
+				console.log('rescraping')
+				threebr = await scrapeThreeBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...threebr
+			]
+		}
+		if (units.includes(4)) {
+			console.log('scraping fourbr padmapper')
+			let fourbr = await scrapeFourBrRentalData(unit.address).catch(e => reject(e))
+			if (fourbr.length < 3) {
+				console.log('rescraping')
+				fourbr = await scrapeFourBrRentalDataZoom(unit.address).catch(e => reject(e))
+			}
+			brData = [
+				...brData,
+				...fourbr
+			]
+		}
+
+		if (brData) {
+			resolve(brData)
+		} else {
+			reject('padmapper error')
+		}
+	})
+}
+
+exports.rentalDataPromise = rentalDataPromise

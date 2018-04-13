@@ -4,18 +4,17 @@ const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 const base64url = require('base64url');
 
+const Promise = require('bluebird')
+
 const request = require('request');
 const rp = require('request-promise-native');
 const cheerio = require('cheerio');
-const Mlslink = require('../db/mlslink')
-const mongoose = require('mongoose')
+const mega = require('./mega')
 
-mongoose.connect('mongodb://localhost:27017/mls_listings')
-
-const SCOPES = ['https://mail.google.com/'];
+const SCOPES = ['https://mail.google.com/', 'https://www.googleapis.com/auth/gmail.modify'];
 const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
-const TOKEN_PATH = TOKEN_DIR + 'gmail-nodejs-quickstart.json';
+const TOKEN_PATH = TOKEN_DIR + 'gmailtoken.json';
 
 /**
  * HOW THIS FILE WORKS
@@ -27,7 +26,7 @@ const TOKEN_PATH = TOKEN_DIR + 'gmail-nodejs-quickstart.json';
  * 4. Run this script to populate db with torontomls links
  */
 
-fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+fs.readFile('client_secret3.json', function processClientSecrets(err, content) {
   if (err) {
     console.log('Error loading client secret file: ' + err);
     return;
@@ -102,18 +101,18 @@ function storeToken(token) {
  */
 
 function readMessages(auth) {
-  	// - get the links that are needed
-	// - organize that data 
-	// - insert into db
+  // - get the links that are needed
+// - organize that data 
+// - insert into db
   var gmail = google.gmail('v1');
   gmail.users.messages.list({
     auth,
     userId: 'me'
   },{
     qs: {
-      q: 'subject:property match from:michaellombardi29@gmail.com',
+      q: 'subject:property match is:unread',
     }
-  }, function(err, response) {
+  }, async function(err, response) {
     if (err) {
       console.log('Error');
       return;
@@ -124,8 +123,9 @@ function readMessages(auth) {
     } else {
       // Got list of messages from query
       // Now get them and get that info
-
+      //console.log(messages.length)
       let urls = []
+      
       messages.forEach((m, i) => {
         gmail.users.messages.get({
           auth,
@@ -141,10 +141,10 @@ function readMessages(auth) {
           const parts = payload.parts
           const body = parts[0].body
           const data = body.data
-
+    
           // v - the email we want to get a link from
           const msg = base64url.decode(data)
-
+    
           // v - array of links containing http
           const matches = msg.match(/\bhttp?:\/\/\S+/gi);
           const match = matches[0].slice(0, -1)
@@ -155,26 +155,124 @@ function readMessages(auth) {
           } else {
             url = null
           }
-
+    
           if (url) {
             const websiteCheck = await rp(url)
             if (websiteCheck.length > 150) {
-              // this means link is not expired
-              // insert into Mlslink db
-              let mlslink = new Mlslink()
-              mlslink.link = url
-              mlslink.save(err => {
-                if (err) {
-                  console.error(err)
-                } else {
-                  console.log(`${mlslink.link} saved`)
-                }
-              })
+              /**
+               * THIS IS CAN BE MLSSCRAPE USING THE URL
+               * SO AWAIT IT...mapseries
+               */
+              mega(url)
             }
           }
         })
       })
+      
+      messages.forEach((m, i) => {
+        gmail.users.messages.modify({
+          auth,
+          userId: 'me',
+          id: m.id,
+          removeLabelIds: ['UNREAD']
+        }, function(err) {
+          if (err) {
+            console.log(err)
+            return;
+          }
+          console.log('Successfully marked email as read', m.id);
+        });
+      })
     }
+
   })
 }
 
+
+
+
+// function readMessages(auth) {
+//   // - get the links that are needed
+// // - organize that data 
+// // - insert into db
+// var gmail = google.gmail('v1');
+// gmail.users.messages.list({
+//   auth,
+//   userId: 'me'
+// },{
+//   qs: {
+//     q: 'subject:property match is:unread',
+//   }
+// }, async function(err, response) {
+//   if (err) {
+//     console.log('Error');
+//     return;
+//   }
+//   var messages = response.messages;
+//   if (messages.length == 0) {
+//     console.log('no messages found');
+//   } else {
+//     // Got list of messages from query
+//     // Now get them and get that info
+//     let urls = []
+
+//     try {
+//       urls = await Promise.mapSeries(messages, (m, gmail) => {
+//         console.log(typeof gmail)
+//       })
+//     } catch(e) {
+//       console.log(e);
+//       return;
+//     }
+//     console.log(urls)
+//   }
+// })
+// }
+
+// const getMessage = (m, gmail) => {
+// console.log(`Doing getMessage()`)
+// return new Promise((resolve, reject) => {
+//   gmail.users.messages.get({
+//     auth,
+//     userId: 'me',
+//     id: m.id
+//   }, {
+//     format: 'full'
+//   }, async function(err, response) {
+//     if (err) {
+//       reject(err)
+//       console.log(err)
+//     }
+//     const payload = response.payload
+//     const parts = payload.parts
+//     const body = parts[0].body
+//     const data = body.data
+
+//     // v - the email we want to get a link from
+//     const msg = base64url.decode(data)
+
+//     // v - array of links containing http
+//     const matches = msg.match(/\bhttp?:\/\/\S+/gi);
+//     const match = matches[0].slice(0, -1)
+    
+//     let url 
+//     if (~match.indexOf('torontomls.net')) { 
+//       url = match
+//     } else {
+//       url = null
+//     }
+
+//     if (url) {
+//       const websiteCheck = await rp(url)
+//       if (websiteCheck.length > 150) {
+//         /**
+//          * THIS IS CAN BE MLSSCRAPE USING THE URL
+//          * SO AWAIT IT...mapseries
+//          */
+//         resolve(url)
+//       }
+//     }
+//   })
+
+// })
+// }
