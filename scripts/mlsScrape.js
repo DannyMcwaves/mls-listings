@@ -77,7 +77,6 @@ const mlsLinkToDb = async (url) => {
 	} catch(e) {
 		throw e
 	}
-	console.log('2');
 	/**
 	 * This line, takes the array of housesWithUnitInfo
 	 * And the rentalDataPromise function
