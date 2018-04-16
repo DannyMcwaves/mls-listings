@@ -6,9 +6,10 @@ const scrapeHouseLink = async (url) => {
 	const nightmare = new Nightmare({ show: false })
 
 	try {
-
+		console.log('a');
 		const result = await nightmare
 			.goto(url)
+			.wait(3000)
 			.evaluate(function() {
 				function getDataFromHtml(child) {
 					let data = {}
@@ -141,8 +142,10 @@ const scrapeHouseLink = async (url) => {
 					return data
 				}
 
+				console.log('c');
 				var elements = Array.from(document.getElementsByClassName('formitem legacyBorder formgroup vertical'));
 				return elements.map(function(element) {
+					console.log('b')
 					const child = element.children
 	
 					// v - the object to create and return

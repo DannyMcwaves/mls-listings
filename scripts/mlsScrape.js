@@ -37,7 +37,7 @@ const mlsLinkToDb = async (url) => {
 		console.log(e)
 		return
 	}
-
+	console.log('1')
 	let houseArray = []
 	let housesWithUnitInfo = []
 	let zz = 0
@@ -81,7 +81,7 @@ const mlsLinkToDb = async (url) => {
 	} catch(e) {
 		throw e
 	}
-
+	console.log('2');
 	/**
 	 * This line, takes the array of housesWithUnitInfo
 	 * And the rentalDataPromise function
@@ -195,5 +195,5 @@ const insertHouses = (houseArray) => {
 		})
 	})
 }
-
-module.exports = mlsLinkToDb
+mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=5fd54a71dfd24404b9c7d7bf8d1d0bc9&App=TREB')
+//module.exports = mlsLinkToDb

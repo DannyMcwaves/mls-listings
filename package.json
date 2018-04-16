@@ -23,7 +23,7 @@
     "mail-listener2": "^0.3.1",
     "mongoose": "^5.0.3",
     "morgan": "^1.9.0",
-    "nightmare": "segmentio/nightmare",
+    "nightmare": "^3.0.1",
     "nodemailer": "^4.6.4",
     "pug": "^2.0.3",
     "request": "^2.83.0",

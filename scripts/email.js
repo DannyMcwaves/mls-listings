@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer')
-const pw = require('../special').gpw
 
 const sendMail = (url, address, caprate) => {
 	let transporter = nodemailer.createTransport({
