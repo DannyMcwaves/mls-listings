@@ -1,6 +1,6 @@
 const Nightmare = require('nightmare')
 const House = require('../db/house')
-const mongoose = require('mongoose')
+const db = require('../db/db')
 
 const scrapeHouseLink = require('./scrapeHouseLink')
 
@@ -34,13 +34,10 @@ const mlsLinkToDb = async (url) => {
 	try {
 		houseList = await scrapeHouseLink(url)
 	} catch(e) {
-		console.log(e)
-		return
+		throw e
 	}
-	console.log('1')
 	let houseArray = []
 	let housesWithUnitInfo = []
-	let zz = 0
 
 	houseList.forEach(h => {
 		const { data } = h // data is the object containing the data
@@ -91,8 +88,7 @@ const mlsLinkToDb = async (url) => {
 	try {
 		rentalDataArray = await Promise.mapSeries(housesWithUnitInfo, rentalDataPromise)
 	} catch (e) {
-		console.log('error line 99')
-		return null
+		throw e
 	}
 
 	// here check if the house has rental info for each unit
@@ -147,7 +143,7 @@ const mlsLinkToDb = async (url) => {
 		await Promise.all(updateHousePromises)
 	}
 	catch(e) {
-		console.log(e)
+		throw e
 	}	
 
 	capRateHouses.forEach(c => {

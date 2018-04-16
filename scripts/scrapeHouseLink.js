@@ -3,15 +3,12 @@ const Nightmare = require('nightmare')
 const scrapeHouseLink = async (url) => {
 	console.log(`Scrapeing ${url}`)
 
-	const nightmare = new Nightmare({ show: false })
+	const nightmare = new Nightmare({ show: true })
 
 	try {
-		console.log('a');
 		const result = await nightmare
 			.goto(url)
-			.wait(30000)
 			.evaluate(function() {
-				console.log('swag');
 				function getDataFromHtml(child) {
 					let data = {}
 	
@@ -143,10 +140,8 @@ const scrapeHouseLink = async (url) => {
 					return data
 				}
 
-				console.log('c');
 				var elements = Array.from(document.getElementsByClassName('formitem legacyBorder formgroup vertical'));
 				return elements.map(function(element) {
-					console.log('b')
 					const child = element.children
 	
 					// v - the object to create and return
@@ -482,7 +477,7 @@ const scrapeHouseLink = async (url) => {
 
 		return result
 	} catch(e) {
-		console.error(e)
+		console.log(e)
 		return null
 	}
 }
