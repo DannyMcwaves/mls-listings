@@ -9,8 +9,9 @@ const scrapeHouseLink = async (url) => {
 		console.log('a');
 		const result = await nightmare
 			.goto(url)
-			.wait(3000)
+			.wait(30000)
 			.evaluate(function() {
+				console.log('swag');
 				function getDataFromHtml(child) {
 					let data = {}
 	
