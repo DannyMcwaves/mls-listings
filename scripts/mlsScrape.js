@@ -1,6 +1,5 @@
 const Nightmare = require('nightmare')
 const House = require('../db/house')
-const db = require('../db/db')
 
 const scrapeHouseLink = require('./scrapeHouseLink')
 
@@ -191,5 +190,4 @@ const insertHouses = (houseArray) => {
 		})
 	})
 }
-mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=5fd54a71dfd24404b9c7d7bf8d1d0bc9&App=TREB')
-//module.exports = mlsLinkToDb
+module.exports = mlsLinkToDb

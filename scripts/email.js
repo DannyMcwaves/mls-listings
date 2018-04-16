@@ -21,7 +21,7 @@ const sendMail = (url, address, caprate) => {
 
 	let mailOptions = {
 		from: '"Real Property Numbers" <realpropertynumbers@gmail.com>',
-		to: 'michaellombardi29@gmail.com', 
+		to: 'albertkim91@gmail.com', 
 		subject: `New property, cap rate: ${caprate}`,
 		text: 'A property of interest.', 
 		html: msg
