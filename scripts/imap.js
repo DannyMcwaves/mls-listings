@@ -2,10 +2,11 @@ const MailListener = require("mail-listener2")
 const rp = require('request-promise-native');
 const mlsLinkToDb = require('./mlsScrape')
 const db = require('../db/db')
-
+const Xvfb = require('xvfb')
+const xvfb = new Xvfb()
 const mailListener = new MailListener({
 	username: "realpropertynumbers@gmail.com",
-	password: "torontotoronto",
+	password: "torontotdot",
 	host: "imap.gmail.com",
 	port: 993,
 	tls: true,
@@ -46,7 +47,9 @@ mailListener.on("mail", async (mail, seqno, attributes) => {
 				if (websiteCheck.length > 150) {
 					// if link is not expired
 					console.log(`Calling mlsLinkToDb`)
+				 	xvfb.startSync()	
 					mlsLinkToDb(match)
+					xvfb.stopSync()	
 				}			
 			}
 		}

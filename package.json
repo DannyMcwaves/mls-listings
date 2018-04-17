@@ -29,6 +29,7 @@
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "threads": "^0.10.1",
+    "xvfb": "^0.2.3",
     "zcrmsdk": "^0.0.3"
   },
   "scripts": {

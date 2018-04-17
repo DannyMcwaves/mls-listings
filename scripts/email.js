@@ -5,7 +5,7 @@ const sendMail = (url, address, caprate) => {
 		service: "Gmail",
 		auth: {
 				user: 'realpropertynumbers@gmail.com',
-				pass: 'torontotoronto'
+				pass: 'torontotdot'
 		},
 		tls:{
 			rejectUnauthorized:false
@@ -16,12 +16,12 @@ const sendMail = (url, address, caprate) => {
 		<p>A property of interest.</p>
 		<p>${address}</p>
 		<p>Cap rate: ${caprate}</p>
-		<a href="${url}">${url}</a>
+		<a href="http://realpropertynumbers.com">realpropertynumbers.com</a>
 	`
 
 	let mailOptions = {
 		from: '"Real Property Numbers" <realpropertynumbers@gmail.com>',
-		to: 'albertkim91@gmail.com', 
+		to: 'michaellombardi29@gmail.com', 
 		subject: `New property, cap rate: ${caprate}`,
 		text: 'A property of interest.', 
 		html: msg
