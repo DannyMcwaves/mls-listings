@@ -3,7 +3,7 @@ const Nightmare = require('nightmare')
 const scrapeHouseLink = async (url) => {
 	console.log(`Scrapeing ${url}`)
 
-	const nightmare = new Nightmare({ show: false })
+	const nightmare = new Nightmare({ show: true })
 
 	try {
 		const result = await nightmare

@@ -39,10 +39,9 @@ mailListener.on("mail", async (mail, seqno, attributes) => {
 	if (result) {
 		const matches = mail.html.match(/\bhttp?:\/\/\S+/gi);
 		if (matches !== null) {
-			const match = matches[0].slice(0, -1).replace(/&amp;/g, '&')
+			const match = matches[0].slice(0, -1).replace(/&amp;/g, '&').replace(/"/g, '')
 			
 			if (~match.indexOf('torontomls.net/Live/Pages/Public')) { 
-				// if link is not expired
 				console.log(`Calling mlsLinkToDb`)
 				xvfb.start(function(err, xvfbProcess) {
 					mlsLinkToDb(match)
