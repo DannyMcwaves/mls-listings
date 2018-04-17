@@ -36,21 +36,17 @@ mailListener.on("mail", async (mail, seqno, attributes) => {
 	 */
 
 	const result = mail.subject.match(/property match/i)
-
 	if (result) {
 		const matches = mail.html.match(/\bhttp?:\/\/\S+/gi);
 		if (matches !== null) {
 			const match = matches[0].slice(0, -1).replace(/&amp;/g, '&')
 			
 			if (~match.indexOf('torontomls.net/Live/Pages/Public')) { 
-				const websiteCheck = await rp(match)
-				if (websiteCheck.length > 150) {
-					// if link is not expired
-					console.log(`Calling mlsLinkToDb`)
-				 	xvfb.startSync()	
+				// if link is not expired
+				console.log(`Calling mlsLinkToDb`)
+				xvfb.start(function(err, xvfbProcess) {
 					mlsLinkToDb(match)
-					xvfb.stopSync()	
-				}			
+				})
 			}
 		}
 	}
