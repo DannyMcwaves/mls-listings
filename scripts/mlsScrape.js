@@ -71,7 +71,7 @@ const mlsLinkToDb = async (url) => {
 			housesWithUnitInfo.push(house)
 		}
 	})
-
+console.log(houseArray.length)
 	try {
 		await insertHouses(houseArray)
 	} catch(e) {
