@@ -23,6 +23,10 @@ mailListener.on("server:connected", () => {
 
 mailListener.on("server:disconnected", () => {
 	console.log("imap Disonnected")
+	mailListener.stop()
+	console.log("mailListner.stop() called")
+	mailListener.start()
+	console.log("mailListener.start() called")
 })
 
 mailListener.on("mail", async (mail, seqno, attributes) => {
