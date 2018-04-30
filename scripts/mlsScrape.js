@@ -12,6 +12,9 @@ const rentalDataPromise = require('./mlsHelpers').rentalDataPromise
 
 const Promise = require('bluebird')
 
+//keep this in here for dev testing
+//const db = require('../db/db')
+
 /**
  * mlsLinkToDb = function
  * Takes a link (Url)
@@ -30,15 +33,32 @@ const Promise = require('bluebird')
  */
 const mlsLinkToDb = async (url) => {
 	let houseList
+	let newHouses = []
 	try {
 		houseList = await scrapeHouseLink(url)
+		// now check if the addresses that were scraped...
+		// are already in db
+		// ...mapseries
+		const checkedHouses = await Promise.mapSeries(houseList, checkIfHouseExists)
+
+		checkedHouses.forEach((c, i) => {
+			if (c.length === 0) {
+				newHouses.push(houseList[i])
+			}
+		})
+
+		if (newHouses.length === 0) {
+			console.log(`No new houses to add to db. Ending script.`)
+			return
+		}
 	} catch(e) {
 		throw e
 	}
+
 	let houseArray = []
 	let housesWithUnitInfo = []
 
-	houseList.forEach(h => {
+	newHouses.forEach(h => {
 		const { data } = h // data is the object containing the data
 
 		let unit = null
@@ -71,12 +91,13 @@ const mlsLinkToDb = async (url) => {
 			housesWithUnitInfo.push(house)
 		}
 	})
-	
+
 	try {
 		await insertHouses(houseArray)
 	} catch(e) {
 		throw e
 	}
+
 	/**
 	 * This line, takes the array of housesWithUnitInfo
 	 * And the rentalDataPromise function
@@ -189,5 +210,17 @@ const insertHouses = (houseArray) => {
 		})
 	})
 }
-//mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=5fd54a71dfd24404b9c7d7bf8d1d0bc9&App=TREB')
+
+const checkIfHouseExists = (house) => {
+	return new Promise((resolve, reject) => {
+		House.find({ address: house.data.address }).limit(1).exec((err, doc) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(doc)
+			}
+		})
+	})
+}
+
 module.exports = mlsLinkToDb

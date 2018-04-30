@@ -40,6 +40,8 @@
     "e": "node scripts/email.js",
     "email": "node scripts/readEmail.js",
     "xscrape": "xvfb-run --server-args='-screen 0 1024x768x24' node scripts/mlsScrape.js",
-    "imap": "node scripts/imap.js"
+    "imap": "node scripts/imap.js",
+    "padtest": "node scripts/pad_tests.js",
+    "housetest": "node scripts/test.js"
   }
 }

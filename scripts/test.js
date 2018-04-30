@@ -1,8 +1,11 @@
-const mlsLinkToDb = require('./mlsScrape')
-const Xvfb = require('xvfb')
-const xvfb = new Xvfb()
+const scrapeHouseLink = require('./scrapeHouseLink')
 
-xvfb.start((err, xvfbProcess) => {
+const doIt = async (url) => {
+	const x = await scrapeHouseLink(url)
+	x.forEach(xx => {
+		//console.log(xx)
+		console.log({units: xx.data.unitAndBr, address: xx.data.address})
+	})
+}
 
-mlsLinkToDb('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=5fd54a71dfd24404b9c7d7bf8d1d0bc9&App=TREB')
-})
+doIt('http://v3.torontomls.net/Live/Pages/Public/Link.aspx?Key=dac795bf9c9045c79e6a94a76be789f6&App=TREB')

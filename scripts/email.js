@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer')
 
+const michael = 'michaellombardi29@gmail.com'
+
 const sendMail = (url, address, caprate) => {
 	let transporter = nodemailer.createTransport({
 		service: "Gmail",
@@ -21,7 +23,7 @@ const sendMail = (url, address, caprate) => {
 
 	let mailOptions = {
 		from: '"Real Property Numbers" <realpropertynumbers@gmail.com>',
-		to: 'michaellombardi29@gmail.com', 
+		to: michael, 
 		subject: `New property, cap rate: ${caprate}`,
 		text: 'A property of interest.', 
 		html: msg

@@ -3,7 +3,7 @@ const Nightmare = require('nightmare')
 const scrapeHouseLink = async (url) => {
 	console.log(`Scrapeing ${url}`)
 
-	const nightmare = new Nightmare({ show: true })
+	const nightmare = new Nightmare({ show: false })
 
 	try {
 		const result = await nightmare
@@ -249,7 +249,6 @@ const scrapeHouseLink = async (url) => {
 						units: []
 					}
 	
-	
 					// NOW PARSEDROOMS IS PARSED.
 					// EACH LEVEL HAS EVERY ROOM AND WASHROOM IN IT
 					// NOW YOU MUST FIGURE OUT UNITS + BEDROOMS OF THE CURRENT ADDRESS!
@@ -258,7 +257,7 @@ const scrapeHouseLink = async (url) => {
 					if (!parsedRooms.errs.error) {
 						const { bsmt, main, second, third } = parsedRooms
 						units = [] // make as array
-						// 1 kitchen = 1 unit...get all rooms into this bitch
+						// 1 kitchen = 1 unit...get all rooms into this 
 						if (data.kitchens === 1) {
 							let num = 0
 							if (bsmt.rooms.length > 0) {
@@ -413,6 +412,17 @@ const scrapeHouseLink = async (url) => {
 											} else {
 												units.push(['main', 'second'])
 											}
+										} else if (secondKitchen) {
+											if (!thirdKitchen) {
+												if (secondWashroom) {
+													units.push(['second', 'third'])
+												}
+											} else if (thirdKitchen) {
+												if (thirdWashroom) {
+													units.push(['third'])
+													units.push(['second'])
+												}
+											}
 										}
 									} else if (!mainKitchen) {
 										if (secondKitchen) {
@@ -444,7 +454,7 @@ const scrapeHouseLink = async (url) => {
 					// ASSUME THAT THE UNITS ARE DONE PROPERLY
 					// NOW COUNT THE BEDROOMS FOR EACH UNIT
 					// AND YOU HAVE THE HOUSE OBJECT
-	
+					
 					if (!parsedRooms.errs.error) {
 	
 						units.forEach(u => {
