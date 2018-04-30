@@ -47,12 +47,13 @@ const mlsLinkToDb = async (url) => {
 			}
 		})
 
-		if (newHouses.length === 0) {
-			console.log(`No new houses to add to db. Ending script.`)
-			return
-		}
 	} catch(e) {
 		throw e
+	}
+
+	if (newHouses.length === 0) {
+		console.log(`No new houses to add to db. Ending script.`)
+		return
 	}
 
 	let houseArray = []
