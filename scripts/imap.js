@@ -44,9 +44,17 @@ mailListener.on("mail", async (mail, seqno, attributes) => {
 			const match = matches[0].slice(0, -1).replace(/&amp;/g, '&').replace(/"/g, '')
 			
 			if (~match.indexOf('torontomls.net/Live/Pages/Public')) { 
-				console.log(`Calling mlsLinkToDb`)
-				xvfb.start(function(err, xvfbProcess) {
-					mlsLinkToDb(match)
+				xvfb.start(async function(err, xvfbProcess) {
+					console.log(`Calling mlsLinkToDb`)
+					try {
+						await mlsLinkToDb(match)
+						console.log(`Finished mlsLinkToDb`)
+						xvfb.stop(function(err) {});
+						console.log(`xvfb stop called`)
+					} catch(e) {
+						console.log(e)
+						process.exit(1)
+					}
 				})
 			}
 		}
