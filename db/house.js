@@ -8,6 +8,7 @@ let houseSchema = new Schema({
 		unique: true,
 		index: true
 	},
+	url: String,
 	mls: String,
 	price: Number,
 	sqft: String,
@@ -16,6 +17,7 @@ let houseSchema = new Schema({
 	heat: String,
 	hydro: String,
 	taxes: Number,
+	capRate: Number,
 	unitAndBr: {
 		err: {
 			error: Boolean,

@@ -3,3 +3,4 @@ node_modules/
 .vscode
 client_secret.json
 .DS_Store
+special.js
